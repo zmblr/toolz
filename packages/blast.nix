@@ -1,15 +1,16 @@
 {
   blast,
+  coreutils,
+  curl,
+  findutils,
+  gnutar,
+  google-cloud-sdk,
+  gzip,
   lib,
   makeWrapper,
   perl,
   stdenv,
-  curl,
   wget,
-  findutils,
-  gnutar,
-  gzip,
-  coreutils,
 }:
 stdenv.mkDerivation {
   pname = "blast";
@@ -61,6 +62,7 @@ stdenv.mkDerivation {
         gnutar
         gzip
         coreutils
+        google-cloud-sdk
       ]
     }
 
