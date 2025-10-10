@@ -29,6 +29,7 @@
       settings.global.excludes = [
         "*.lock"
         ".gitignore"
+        "packages/nextflow/deps.json"
       ];
     };
   };
