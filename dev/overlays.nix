@@ -1,5 +1,5 @@
 {self, ...}: {
-  flake.overlays.default = _final: _prev: {
-    toolz = self.packages;
+  flake.overlays.default = final: _prev: {
+    toolz = self.packages.${final.systems};
   };
 }

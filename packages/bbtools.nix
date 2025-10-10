@@ -58,7 +58,7 @@
     exec "$SCRIPT" "$@"
   '';
 in
-  bbtools-wrapper.overrideAttrs (old: {
+  bbtools-wrapper.overrideAttrs (_old: {
     pname = "bbtools";
     version = "39.36";
 
