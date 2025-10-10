@@ -6,6 +6,7 @@
       imports = [
         ./packages/flake-module.nix
         ./dev/formatter.nix
+        ./dev/overlays.nix
         ./dev/shell.nix
       ];
       perSystem = {system, ...}: {
