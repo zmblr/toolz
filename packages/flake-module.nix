@@ -13,6 +13,7 @@
         flash = pkgs.callPackage ./flash.nix {};
         nextflow = pkgs.callPackage ./nextflow {};
         xopen = pkgs.callPackage ./xopen.nix {};
+        aptasuite = pkgs.callPackage ./aptasuite.nix {};
       }
       // lib.optionalAttrs pkgs.stdenv.isLinux {
         blast = pkgs.callPackage ./blast.nix {};
