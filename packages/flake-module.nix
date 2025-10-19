@@ -15,6 +15,8 @@
         flash = pkgs.callPackage ./flash.nix {};
         jellyfish = pkgs.callPackage ./jellyfish.nix {};
         jellyfish-full = pkgs.callPackage ./jellyfish-full.nix {};
+        kmc = pkgs.callPackage ./kmc.nix {};
+        kmc-full = pkgs.callPackage ./kmc-full.nix {};
         nextflow = pkgs.callPackage ./nextflow {};
         xopen = pkgs.callPackage ./xopen.nix {};
         # keep-sorted end
