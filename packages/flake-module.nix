@@ -23,6 +23,7 @@
       }
       // lib.optionalAttrs pkgs.stdenv.isLinux {
         blast = pkgs.callPackage ./blast.nix {};
+        viennarna-hpc = pkgs.callPackage ./viennarna-hpc.nix {};
       };
   };
 }
