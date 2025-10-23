@@ -6,7 +6,6 @@
   numpy,
   scipy,
   pandas,
-  future,
   networkx,
   biopython,
   appdirs,
@@ -36,7 +35,6 @@ buildPythonPackage rec {
     numpy
     scipy
     pandas
-    future
     networkx
     biopython
     appdirs
