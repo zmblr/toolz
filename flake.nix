@@ -5,16 +5,27 @@
       systems = import inputs.systems;
       imports = [
         ./packages/flake-module.nix
+        ./overlays/flake-module.nix
         ./dev/formatter.nix
-        ./dev/checks.nix
-        ./dev/overlays.nix
         ./dev/shell.nix
       ];
-      perSystem = {system, ...}: {
+
+      perSystem = {
+        lib,
+        self',
+        system,
+        ...
+      }: {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };
+
+        checks = let
+          packages = lib.mapAttrs' (n: lib.nameValuePair "package-${n}") self'.packages;
+          devShells = lib.mapAttrs' (n: lib.nameValuePair "devShell-${n}") self'.devShells;
+        in
+          {inherit (self') formatter;} // packages // devShells;
       };
     };
 
