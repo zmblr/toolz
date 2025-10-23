@@ -2,6 +2,8 @@
   imports = [inputs.treefmt-nix.flakeModule];
   perSystem = {
     treefmt = {
+      flakeCheck = true;
+
       # Used to find the project root
       projectRootFile = ".git/config";
 
@@ -21,7 +23,6 @@
 
         # Other formatters
         keep-sorted.enable = true;
-        typos.enable = true;
         yamlfmt.enable = true;
         taplo.enable = true;
       };

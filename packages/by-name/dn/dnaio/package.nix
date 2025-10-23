@@ -1,14 +1,13 @@
 {
   lib,
-  python3,
+  buildPythonPackage,
   fetchPypi,
-  zlib-ng,
-  callPackage,
+  setuptools,
+  setuptools-scm,
+  cython,
+  xopen,
 }: let
-  python = python3;
-  xopen = callPackage ./xopen.nix {inherit lib python3 zlib-ng;};
-
-  cython_latest = python.pkgs.cython.overrideAttrs (_old: rec {
+  cython_latest = cython.overrideAttrs (_old: rec {
     version = "3.1.4";
     src = fetchPypi {
       pname = "cython";
@@ -17,7 +16,7 @@
     };
   });
 in
-  python.pkgs.buildPythonPackage rec {
+  buildPythonPackage rec {
     pname = "dnaio";
     version = "1.2.4";
     pyproject = true;
@@ -29,12 +28,11 @@ in
 
     nativeBuildInputs = [cython_latest];
 
-    build-system = with python.pkgs;
-      [
-        setuptools
-        setuptools-scm
-      ]
-      ++ [cython_latest];
+    build-system = [
+      setuptools
+      setuptools-scm
+      cython_latest
+    ];
 
     dependencies = [xopen];
 
