@@ -19,6 +19,7 @@ in
     kmc = callPackage (byNamePackage "kmc") {};
     kmc-full = callPackage (byNamePackage "kmc-full") {};
     nextflow = callPackage (byNamePackage "nextflow") {};
+    vsearch = callPackage (byNamePackage "vsearch") {};
     # keep-sorted end
   }
   // lib.optionalAttrs stdenv.isLinux {
