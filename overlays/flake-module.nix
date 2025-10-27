@@ -1,13 +1,21 @@
-{self, ...}: {
+{
+  self,
+  inputs,
+  ...
+}: {
   flake.overlays.default = _final: prev: let
     pythonOverlay = import (self + "/packages/lib/make-python-packages.nix") {
       inherit (prev) lib callPackage stdenv;
+      inherit inputs;
+      inherit (prev) system;
     };
 
     python3PackagesExtended = prev.python3Packages.overrideScope pythonOverlay;
 
     regularPackages = import (self + "/packages/lib/make-packages.nix") {
       inherit (prev) lib callPackage stdenv;
+      inherit inputs;
+      inherit (prev) system;
       python3Packages = python3PackagesExtended;
     };
   in

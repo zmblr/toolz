@@ -3,11 +3,20 @@
   callPackage,
   stdenv,
   python3Packages,
+  inputs ? {},
+  system ? null,
 }: let
   byNamePackage = name: let
     firstTwo = builtins.substring 0 2 name;
   in
     ../by-name + "/${firstTwo}/${name}/package.nix";
+
+  externalPackages =
+    if inputs != {} && system != null
+    then {
+      seqtable = inputs.seqtable.packages.${system}.seqtable or null;
+    }
+    else {};
 in
   {
     # keep-sorted start
@@ -24,6 +33,7 @@ in
     vsearch = callPackage (byNamePackage "vsearch") {};
     # keep-sorted end
   }
+  // externalPackages
   // lib.optionalAttrs stdenv.isLinux {
     blast = callPackage (byNamePackage "blast") {};
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};

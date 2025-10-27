@@ -39,5 +39,11 @@
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     # keep-sorted end
+
+    ## Curated List of Packages
+    # keep-sorted start
+    seqtable.inputs.nixpkgs.follows = "nixpkgs";
+    seqtable.url = "github:mulatta/seqtable";
+    # keep-sorted end
   };
 }
