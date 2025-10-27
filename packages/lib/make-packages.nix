@@ -2,6 +2,7 @@
   lib,
   callPackage,
   stdenv,
+  python3Packages,
 }: let
   byNamePackage = name: let
     firstTwo = builtins.substring 0 2 name;
@@ -14,6 +15,7 @@ in
     bbtools = callPackage (byNamePackage "bbtools") {};
     fastaptamer = callPackage (byNamePackage "fastaptamer") {};
     flash = callPackage (byNamePackage "flash") {};
+    inherit (python3Packages) cutadapt;
     jellyfish = callPackage (byNamePackage "jellyfish") {};
     jellyfish-full = callPackage (byNamePackage "jellyfish-full") {};
     kmc = callPackage (byNamePackage "kmc") {};
