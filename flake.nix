@@ -40,7 +40,7 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     # keep-sorted end
 
-    ## Curated List of Packages
+    # ==== Curated External Flakes ====
     # keep-sorted start
     seqtable.inputs.nixpkgs.follows = "nixpkgs";
     seqtable.url = "github:mulatta/seqtable";
