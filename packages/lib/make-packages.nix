@@ -2,7 +2,6 @@
   lib,
   callPackage,
   stdenv,
-  python3Packages,
   inputs ? {},
   system ? null,
 }: let
@@ -24,7 +23,6 @@ in
     bbtools = callPackage (byNamePackage "bbtools") {};
     fastaptamer = callPackage (byNamePackage "fastaptamer") {};
     flash = callPackage (byNamePackage "flash") {};
-    inherit (python3Packages) cutadapt;
     jellyfish = callPackage (byNamePackage "jellyfish") {};
     jellyfish-full = callPackage (byNamePackage "jellyfish-full") {};
     kmc = callPackage (byNamePackage "kmc") {};
@@ -35,6 +33,8 @@ in
   }
   // externalPackages
   // lib.optionalAttrs stdenv.isLinux {
+    # keep-sorted start
     blast = callPackage (byNamePackage "blast") {};
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
+    # keep-sorted end
   }
