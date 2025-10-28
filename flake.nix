@@ -42,8 +42,10 @@
 
     # ==== Curated External Flakes ====
     # keep-sorted start
+    selexqc.inputs.nixpkgs.follows = "nixpkgs";
+    selexqc.url = "github:mulatta/selexqc?ref=v0.1.0";
     seqtable.inputs.nixpkgs.follows = "nixpkgs";
-    seqtable.url = "github:mulatta/seqtable";
+    seqtable.url = "github:mulatta/seqtable?ref=v0.1.0";
     # keep-sorted end
   };
 }
