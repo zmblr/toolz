@@ -1,14 +1,15 @@
 {
-  description = "toolz";
+  description = "Rust Project Template";
+
   outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = import inputs.systems;
+
       imports = [
-        ./packages/flake-module.nix
-        ./overlays/flake-module.nix
-        ./templates/flake-module.nix
-        ./dev/formatter.nix
-        ./dev/shell.nix
+        ./nix/packages.nix
+        ./nix/overlays.nix
+        ./nix/shell.nix
+        ./nix/formatter.nix
       ];
 
       perSystem = {
@@ -20,6 +21,9 @@
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           config.allowUnfree = true;
+          overlays = [
+            inputs.rust-overlay.overlays.default
+          ];
         };
 
         checks = let
@@ -34,19 +38,14 @@
     # keep-sorted start
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    gitignore.inputs.nixpkgs.follows = "nixpkgs";
+    gitignore.url = "github:hercules-ci/gitignore.nix";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    rust-overlay.url = "github:oxalica/rust-overlay";
     systems.url = "github:nix-systems/default";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
     treefmt-nix.url = "github:numtide/treefmt-nix";
-    # keep-sorted end
-
-    # ==== Curated External Flakes ====
-    # keep-sorted start
-    selexqc.inputs.nixpkgs.follows = "nixpkgs";
-    selexqc.url = "github:mulatta/selexqc?ref=v0.1.0";
-    seqtable.inputs.nixpkgs.follows = "nixpkgs";
-    seqtable.url = "github:mulatta/seqtable?ref=v0.1.0";
     # keep-sorted end
   };
 }
