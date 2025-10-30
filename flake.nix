@@ -46,7 +46,7 @@
     selexqc.inputs.nixpkgs.follows = "nixpkgs";
     selexqc.url = "github:mulatta/selexqc?ref=v0.1.0";
     seqtable.inputs.nixpkgs.follows = "nixpkgs";
-    seqtable.url = "github:mulatta/seqtable?ref=v0.1.0";
+    seqtable.url = "github:mulatta/seqtable?ref=v0.1.1";
     # keep-sorted end
   };
 }
