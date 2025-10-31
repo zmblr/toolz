@@ -28,6 +28,7 @@ in
     kmc = callPackage (byNamePackage "kmc") {};
     kmc-full = callPackage (byNamePackage "kmc-full") {};
     nextflow = callPackage (byNamePackage "nextflow") {};
+    nupack = callPackage (byNamePackage "nupack") {};
     vsearch = callPackage (byNamePackage "vsearch") {};
     # keep-sorted end
   }
