@@ -24,6 +24,7 @@ in
       dnaio = pySelf.callPackage (byNamePackage "dnaio") {};
       forgi = pySelf.callPackage (byNamePackage "forgi") {};
       logging-exceptions = pySelf.callPackage (byNamePackage "logging-exceptions") {};
+      nupack = pySelf.callPackage (byNamePackage "nupack") {};
       xopen = pySelf.callPackage (byNamePackage "xopen") {};
       # keep-sorted end
     }
