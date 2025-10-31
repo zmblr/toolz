@@ -18,6 +18,7 @@
       dnaio = pySelf.callPackage (byNamePackage "dnaio") {};
       forgi = pySelf.callPackage (byNamePackage "forgi") {};
       logging-exceptions = pySelf.callPackage (byNamePackage "logging-exceptions") {};
+      nupack = pySelf.callPackage (byNamePackage "nupack") {};
       xopen = pySelf.callPackage (byNamePackage "xopen") {};
       # keep-sorted end
     }
@@ -63,8 +64,9 @@ in
   regularPackages
   // externalPackages
   // {
-    # Python packages used as CLI
+    # Python packages to Expose at flake
     inherit (python3PackagesExtended) cutadapt;
+    inherit (python3PackagesExtended) nupack;
 
     # Python package sets
     python3Packages = python3PackagesExtended;
