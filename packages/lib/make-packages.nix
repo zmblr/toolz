@@ -30,6 +30,7 @@ in
     kmc-full = callPackage (byNamePackage "kmc-full") {};
     nextflow = callPackage (byNamePackage "nextflow") {};
     nupack = callPackage (byNamePackage "nupack") {};
+    openzl = callPackage (byNamePackage "openzl") {};
     vsearch = callPackage (byNamePackage "vsearch") {};
     # keep-sorted end
   }
