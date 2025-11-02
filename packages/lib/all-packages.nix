@@ -44,6 +44,7 @@
       kmc = callPackage (byNamePackage "kmc") {};
       kmc-full = callPackage (byNamePackage "kmc-full") {};
       nextflow = callPackage (byNamePackage "nextflow") {};
+      openzl = callPackage (byNamePackage "openzl") {};
       vsearch = callPackage (byNamePackage "vsearch") {};
       # keep-sorted end
     }
