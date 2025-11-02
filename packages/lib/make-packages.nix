@@ -14,6 +14,7 @@
     if inputs != {} && system != null
     then {
       seqtable = inputs.seqtable.packages.${system}.seqtable or null;
+      selexqc = inputs.selexqc.packages.${system}.selexqc or null;
     }
     else {};
 in
