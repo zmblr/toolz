@@ -14,6 +14,7 @@
     if inputs != {} && system != null
     then {
       seqtable = inputs.seqtable.packages.${system}.seqtable or null;
+      selexqc = inputs.selexqc.packages.${system}.selexqc or null;
     }
     else {};
 in
@@ -29,6 +30,7 @@ in
     kmc-full = callPackage (byNamePackage "kmc-full") {};
     nextflow = callPackage (byNamePackage "nextflow") {};
     nupack = callPackage (byNamePackage "nupack") {};
+    openzl = callPackage (byNamePackage "openzl") {};
     vsearch = callPackage (byNamePackage "vsearch") {};
     # keep-sorted end
   }
