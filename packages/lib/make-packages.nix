@@ -28,6 +28,8 @@ in
     jellyfish-full = callPackage (byNamePackage "jellyfish-full") {};
     kmc = callPackage (byNamePackage "kmc") {};
     kmc-full = callPackage (byNamePackage "kmc-full") {};
+    ncbi-dataformat = callPackage (byNamePackage "ncbi-dataformat") {};
+    ncbi-datasets = callPackage (byNamePackage "ncbi-datasets") {};
     nextflow = callPackage (byNamePackage "nextflow") {};
     nupack = callPackage (byNamePackage "nupack") {};
     openzl = callPackage (byNamePackage "openzl") {};
