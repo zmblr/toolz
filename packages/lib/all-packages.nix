@@ -37,6 +37,7 @@
       # keep-sorted start
       aptasuite = callPackage (byNamePackage "aptasuite") {};
       bbtools = callPackage (byNamePackage "bbtools") {};
+      edirect = callPackage (byNamePackage "edirect") {};
       fastaptamer = callPackage (byNamePackage "fastaptamer") {};
       flash = callPackage (byNamePackage "flash") {};
       jellyfish = callPackage (byNamePackage "jellyfish") {};
