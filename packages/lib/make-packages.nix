@@ -41,6 +41,7 @@ in
   // lib.optionalAttrs stdenv.isLinux {
     # keep-sorted start
     blast = callPackage (byNamePackage "blast") {};
+    interproscan = callPackage (byNamePackage "interproscan") {};
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
     # keep-sorted end
   }
