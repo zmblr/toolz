@@ -40,10 +40,12 @@
       edirect = callPackage (byNamePackage "edirect") {};
       fastaptamer = callPackage (byNamePackage "fastaptamer") {};
       flash = callPackage (byNamePackage "flash") {};
+      infernal = callPackage (byNamePackage "infernal") {};
       jellyfish = callPackage (byNamePackage "jellyfish") {};
       jellyfish-full = callPackage (byNamePackage "jellyfish-full") {};
       kmc = callPackage (byNamePackage "kmc") {};
       kmc-full = callPackage (byNamePackage "kmc-full") {};
+      locarna = callPackage (byNamePackage "locarna") {};
       ncbi-dataformat = callPackage (byNamePackage "ncbi-dataformat") {};
       ncbi-datasets = callPackage (byNamePackage "ncbi-datasets") {};
       nextflow = callPackage (byNamePackage "nextflow") {};
