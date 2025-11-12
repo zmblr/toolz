@@ -104,18 +104,6 @@ stdenv.mkDerivation rec {
     ]}"
   '';
 
-  postFixup = ''
-
-    find $out/share/interproscan -type f -name "*.sh" -exec \
-      sed -i "1s|^
-
-    find $out/share/interproscan -type f -name "*.pl" -exec \
-      sed -i "1s|^
-
-    find $out/share/interproscan -type f -name "*.py" -exec \
-      sed -i "1s|^
-  '';
-
   meta = with lib; {
     description = "Protein sequence analysis and classification";
     longDescription = ''
