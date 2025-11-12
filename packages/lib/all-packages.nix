@@ -45,6 +45,7 @@
       jellyfish-full = callPackage (byNamePackage "jellyfish-full") {};
       kmc = callPackage (byNamePackage "kmc") {};
       kmc-full = callPackage (byNamePackage "kmc-full") {};
+      locarna = callPackage (byNamePackage "locarna") {};
       ncbi-dataformat = callPackage (byNamePackage "ncbi-dataformat") {};
       ncbi-datasets = callPackage (byNamePackage "ncbi-datasets") {};
       nextflow = callPackage (byNamePackage "nextflow") {};
