@@ -40,6 +40,7 @@
       edirect = callPackage (byNamePackage "edirect") {};
       fastaptamer = callPackage (byNamePackage "fastaptamer") {};
       flash = callPackage (byNamePackage "flash") {};
+      infernal = callPackage (byNamePackage "infernal") {};
       jellyfish = callPackage (byNamePackage "jellyfish") {};
       jellyfish-full = callPackage (byNamePackage "jellyfish-full") {};
       kmc = callPackage (byNamePackage "kmc") {};
