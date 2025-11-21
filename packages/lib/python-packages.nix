@@ -12,12 +12,14 @@ in
       # keep-sorted start
       cutadapt = pySelf.callPackage (byNamePackage "cutadapt") {};
       dnaio = pySelf.callPackage (byNamePackage "dnaio") {};
+      finch-clust = pySelf.callPackage (byNamePackage "finch-clust") {};
       forgi = pySelf.callPackage (byNamePackage "forgi") {};
       jax = pySelf.callPackage (byNamePackage "jax") {};
       jax-cuda12-pjrt = pySelf.callPackage (byNamePackage "jax-cuda12-pjrt") {};
       jax-cuda12-plugin = pySelf.callPackage (byNamePackage "jax-cuda12-plugin") {};
       jax-triton = pySelf.callPackage (byNamePackage "jax-triton") {};
       jaxlib = pySelf.callPackage (byNamePackage "jaxlib") {};
+      jaxtyping = pySelf.callPackage (byNamePackage "jaxtyping") {};
       logging-exceptions = pySelf.callPackage (byNamePackage "logging-exceptions") {};
       numba-cuda = pySelf.callPackage (byNamePackage "numba-cuda") {};
       nupack = pySelf.callPackage (byNamePackage "nupack") {};
@@ -31,7 +33,10 @@ in
       nvidia-cusparse-cu12 = pySelf.callPackage (byNamePackage "nvidia-cusparse-cu12") {};
       nvidia-nccl-cu12 = pySelf.callPackage (byNamePackage "nvidia-nccl-cu12") {};
       nvidia-nvjitlink-cu12 = pySelf.callPackage (byNamePackage "nvidia-nvjitlink-cu12") {};
+      nvtx = pySelf.callPackage (byNamePackage "nvtx") {};
+      pyclibrary = pySelf.callPackage (byNamePackage "pyclibrary") {};
       rapids-build-backend = pySelf.callPackage (byNamePackage "rapids-build-backend") {};
+      typeguard = pySelf.callPackage (byNamePackage "typeguard") {};
       xopen = pySelf.callPackage (byNamePackage "xopen") {};
       # keep-sorted end
     }
