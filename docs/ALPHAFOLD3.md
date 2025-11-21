@@ -22,6 +22,7 @@ The AlphaFold3 package follows Nix best practices with clear separation of conce
 **Purpose**: Python library with all runtime dependencies
 
 **Contains**:
+
 - AlphaFold3 Python modules and C++ bindings
 - Pre-generated pickle files (ccd.pickle, chemical_component_sets.pickle)
 - Components.cif from PDB snapshots (2025-01-01, hash-pinned)
@@ -42,6 +43,7 @@ from alphafold3 import structure_prediction
 **Purpose**: Command-line interface with integrated tools
 
 **Contains**:
+
 - `alphafold3` CLI wrapper (runs run_alphafold.py)
 - HMMER tools (jackhmmer, nhmmer, etc.)
 - Pre-configured GPU environment
@@ -59,7 +61,7 @@ alphafold3 --json_path=input.json --model_dir=params --output_dir=output
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ alphafold3 (CLI Package - symlinkJoin)                      │
-│ ├─ bin/alphafold3 (wrapper → run_alphafold.py)             │
+│ ├─ bin/alphafold3 (wrapper → run_alphafold.py)              │
 │ ├─ bin/jackhmmer, nhmmer (HMMER tools)                      │
 │ └─ passthru.mkShellHook (GPU environment setup)             │
 └─────────────────────────────────────────────────────────────┘
@@ -68,10 +70,10 @@ alphafold3 --json_path=input.json --model_dir=params --output_dir=output
                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │ python3Packages.alphafold3 (Python Package)                 │
-│ ├─ lib/python3.12/site-packages/alphafold3/                │
-│ │  ├─ Python modules and C++ bindings (alphafold3.cpp)     │
-│ │  └─ constants/converters/*.pickle (build-time generated) │
-│ └─ share/libcifpp/components.cif (PDB snapshot 2025-01-01) │
+│ ├─ lib/python3.12/site-packages/alphafold3/                 │
+│ │  ├─ Python modules and C++ bindings (alphafold3.cpp)      │
+│ │  └─ constants/converters/*.pickle (build-time generated)  │
+│ └─ share/libcifpp/components.cif (PDB snapshot 2025-01-01)  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -93,6 +95,7 @@ alphafold3 --json_path=input.json --model_dir=params --output_dir=output
 ```
 
 **Result**:
+
 - `import alphafold3` works
 - `alphafold3` CLI command NOT available
 - HMMER tools NOT in PATH
@@ -111,6 +114,7 @@ alphafold3 --json_path=input.json --model_dir=params --output_dir=output
 ```
 
 **Result**:
+
 - `alphafold3` CLI command available
 - HMMER tools in PATH
 - `import alphafold3` NOT available (outside Python environment)
@@ -140,12 +144,14 @@ alphafold3 --json_path=input.json --model_dir=params --output_dir=output
 ```
 
 **Result**:
+
 - `import alphafold3` works
 - `alphafold3` CLI command available
 - HMMER tools in PATH
 - GPU environment configured via shell hook
 
 **Activate**:
+
 ```bash
 nix develop .#alphafold3
 ```
@@ -169,11 +175,13 @@ shellHook = alphafold3Pkg.mkShellHook python;
 ```
 
 **What it does**:
+
 - Sets `LD_LIBRARY_PATH` for NVIDIA driver and CUDA libraries
 - Sets `LIBCIFPP_DATA_DIR` for components.cif location
 - Displays GPU environment information on shell startup
 
 **Example output**:
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 AlphaFold3 GPU Environment
@@ -223,11 +231,13 @@ componentsCif = fetchurl {
 ```
 
 **Benefits**:
+
 - ✅ Reproducible builds (hash verification)
 - ✅ No external updates breaking builds
 - ✅ Explicit version management (date-based)
 
 **Updating to newer snapshot**:
+
 1. Find snapshot at https://pdbsnapshots.s3-us-west-2.amazonaws.com/
 2. Update URL with new date (e.g., `20250201`)
 3. Get hash: `nix-prefetch-url <url>`
@@ -303,6 +313,7 @@ AlphaFold3's C++ module requires components.cif during initialization, but the i
 AlphaFold3 uses pybind11 to expose C++ functionality. The C++ module searches for components.cif:
 
 1. **Check `LIBCIFPP_DATA_DIR` environment variable first** (our patch)
+
    - Allows `python.withPackages` environments to work
    - Set by shell hook: `$python_env/lib/python3.12/site-packages/share/libcifpp`
 
@@ -350,11 +361,13 @@ postPatch = ''
 ```
 
 **Runtime Dependencies**:
+
 - **Python**: JAX, JAXlib, NumPy, SciPy, RDKit, etc.
 - **CUDA**: nvidia-{cuda-runtime,cublas,cudnn,cusparse,cusolver,cufft,cupti,nccl,nvjitlink}-cu12
 - **C++ Libraries**: abseil-cpp, libcifpp, dssp, boost, zlib
 
 **Binary Dependencies**:
+
 - **HMMER**: jackhmmer, nhmmer, hmmsearch, etc.
 
 ## Installation Patterns
@@ -466,6 +479,7 @@ shellHook = pkgs.alphafold3.mkShellHook python;
 ```
 
 Or run with wrapper:
+
 ```bash
 nix run .#alphafold3
 ```
