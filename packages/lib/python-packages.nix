@@ -2,6 +2,7 @@
   lib,
   callPackage,
   stdenv,
+  regularPackages,
 }: let
   byNamePackage = import ./by-name.nix;
 in
@@ -30,6 +31,7 @@ in
       nvidia-cusparse-cu12 = pySelf.callPackage (byNamePackage "nvidia-cusparse-cu12") {};
       nvidia-nccl-cu12 = pySelf.callPackage (byNamePackage "nvidia-nccl-cu12") {};
       nvidia-nvjitlink-cu12 = pySelf.callPackage (byNamePackage "nvidia-nvjitlink-cu12") {};
+      rapids-build-backend = pySelf.callPackage (byNamePackage "rapids-build-backend") {};
       xopen = pySelf.callPackage (byNamePackage "xopen") {};
       # keep-sorted end
     }
@@ -130,6 +132,13 @@ in
               description = "AlphaFold 3 structure prediction with pre-generated pickle files";
             };
         });
+      cudf-cu12 = pySelf.callPackage (byNamePackage "cudf-cu12") {
+        inherit (regularPackages) cuda-compat;
+      };
+      libcudf-cu12 = pySelf.callPackage (byNamePackage "libcudf-cu12") {};
+      libkvikio-cu12 = pySelf.callPackage (byNamePackage "libkvikio-cu12") {};
+      librmm-cu12 = pySelf.callPackage (byNamePackage "librmm-cu12") {};
+      pylibcudf-cu12 = pySelf.callPackage (byNamePackage "pylibcudf-cu12") {};
       viennarna-hpc = pySelf.toPythonModule (
         callPackage (byNamePackage "viennarna-hpc") {
           python3 = pySelf.python;
