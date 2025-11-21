@@ -25,6 +25,10 @@ in
     ncbi-datasets = callPackage (byNamePackage "ncbi-datasets") {};
     nextflow = callPackage (byNamePackage "nextflow") {};
     openzl = callPackage (byNamePackage "openzl") {};
+    pybind11-abseil = callPackage (byNamePackage "pybind11-abseil") {
+      inherit (python3PackagesExtended) pybind11;
+      python3 = python3PackagesExtended.python;
+    };
     vsearch = callPackage (byNamePackage "vsearch") {};
   }
   // lib.optionalAttrs stdenv.isLinux {
