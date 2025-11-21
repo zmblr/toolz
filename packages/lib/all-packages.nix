@@ -7,7 +7,7 @@
   inherit (pkgs) lib callPackage;
 
   # Build Python overlay function
-  pythonOverlayFunc = callPackage ./python-packages.nix {};
+  pythonOverlayFunc = callPackage ./python-packages.nix {inherit regularPackages;};
 
   # Apply overlay to get Python packages
   python3PackagesExtended = pkgs.python3Packages.overrideScope pythonOverlayFunc;
