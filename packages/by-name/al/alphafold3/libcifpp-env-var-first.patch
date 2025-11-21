@@ -1,0 +1,22 @@
+diff --git a/src/alphafold3/model/mkdssp_pybind.cc b/src/alphafold3/model/mkdssp_pybind.cc
+index 1234567..abcdefg 100644
+--- a/src/alphafold3/model/mkdssp_pybind.cc
++++ b/src/alphafold3/model/mkdssp_pybind.cc
+@@ -26,6 +26,17 @@ namespace py = pybind11;
+
+ void RegisterModuleMkdssp(pybind11::module m) {
+   py::module site = py::module::import("site");
++
++  // Check LIBCIFPP_DATA_DIR environment variable first (for nix withPackages)
++  const char* env_data_dir = std::getenv("LIBCIFPP_DATA_DIR");
++  if (env_data_dir != nullptr) {
++    auto env_path = std::filesystem::path(env_data_dir) / "components.cif";
++    if (std::filesystem::exists(env_path)) {
++      setenv("LIBCIFPP_DATA_DIR", env_data_dir, 0);
++      return;  // Environment variable is already set correctly
++    }
++  }
++
+   py::list paths = py::cast<py::list>(site.attr("getsitepackages")());
+   // Find the first path that contains the libcifpp components.cif file.
+   bool found = false;
