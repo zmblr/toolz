@@ -73,9 +73,17 @@ in
         ln -s ${alphafold3-with-pickles}/lib $out/lib
       fi
 
-      # Create wrapper with official script name for compatibility with upstream documentation
+      # Create wrappers with official script names for compatibility with upstream documentation
       makeWrapper ${python-with-alphafold3}/bin/python $out/bin/run_alphafold.py \
         --prefix LD_LIBRARY_PATH : "${pkgs.addDriverRunpath.driverLink}/lib:${cudaLibsPath}" \
         --add-flags "${alphafold3-with-pickles.base.src}/run_alphafold.py"
+
+      makeWrapper ${python-with-alphafold3}/bin/python $out/bin/run_alphafold_data_test.py \
+        --prefix LD_LIBRARY_PATH : "${pkgs.addDriverRunpath.driverLink}/lib:${cudaLibsPath}" \
+        --add-flags "${alphafold3-with-pickles.base.src}/run_alphafold_data_test.py"
+
+      makeWrapper ${python-with-alphafold3}/bin/python $out/bin/run_alphafold_test.py \
+        --prefix LD_LIBRARY_PATH : "${pkgs.addDriverRunpath.driverLink}/lib:${cudaLibsPath}" \
+        --add-flags "${alphafold3-with-pickles.base.src}/run_alphafold_test.py"
     '';
   }
