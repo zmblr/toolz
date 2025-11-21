@@ -2,6 +2,9 @@
   lib,
   callPackage,
   stdenv,
+  pkgs,
+  pythonOverlayFunc,
+  python3PackagesExtended,
 }: let
   byNamePackage = import ./by-name.nix;
 in
@@ -26,6 +29,10 @@ in
   }
   // lib.optionalAttrs stdenv.isLinux {
     # Linux-only packages
+    alphafold3 = callPackage (byNamePackage "alphafold3") {
+      inherit pkgs pythonOverlayFunc;
+      python3Packages = python3PackagesExtended;
+    };
     blast = callPackage (byNamePackage "blast") {};
     interproscan = callPackage (byNamePackage "interproscan") {};
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
