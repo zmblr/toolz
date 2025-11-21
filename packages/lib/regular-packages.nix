@@ -34,6 +34,7 @@ in
       python3Packages = python3PackagesExtended;
     };
     blast = callPackage (byNamePackage "blast") {};
+    cuda-compat = callPackage (byNamePackage "cuda-compat") {};
     interproscan = callPackage (byNamePackage "interproscan") {};
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
   }
