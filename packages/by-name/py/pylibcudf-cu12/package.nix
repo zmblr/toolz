@@ -4,7 +4,6 @@
   fetchPypi,
   autoPatchelfHook,
   stdenv,
-  # Dependencies
   libcudf-cu12,
 }:
 buildPythonPackage rec {
