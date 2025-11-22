@@ -140,11 +140,13 @@ in
         inherit (regularPackages) cuda-compat;
       };
       libcudf-cu12 = pySelf.callPackage (byNamePackage "libcudf-cu12") {};
+      libcugraph-cu12 = pySelf.callPackage (byNamePackage "libcugraph-cu12") {};
       libkvikio-cu12 = pySelf.callPackage (byNamePackage "libkvikio-cu12") {};
-      librmm-cu12 = pySelf.callPackage (byNamePackage "librmm-cu12") {};
       libraft-cu12 = pySelf.callPackage (byNamePackage "libraft-cu12") {};
+      librmm-cu12 = pySelf.callPackage (byNamePackage "librmm-cu12") {};
       libucx-cu12 = pySelf.callPackage (byNamePackage "libucx-cu12") {};
       libucxx-cu12 = pySelf.callPackage (byNamePackage "libucxx-cu12") {};
+      pylibcugraph-cu12 = pySelf.callPackage (byNamePackage "pylibcugraph-cu12") {};
       pylibraft-cu12 = pySelf.callPackage (byNamePackage "pylibraft-cu12") {};
       rmm-cu12 = pySelf.callPackage (byNamePackage "rmm-cu12") {};
       ucxx-cu12 = pySelf.callPackage (byNamePackage "ucxx-cu12") {};
