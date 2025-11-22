@@ -5,6 +5,7 @@
   autoPatchelfHook,
   stdenv,
   libcudf-cu12,
+  rmm-cu12,
 }:
 buildPythonPackage rec {
   pname = "pylibcudf-cu12";
@@ -35,6 +36,7 @@ buildPythonPackage rec {
 
   dependencies = [
     libcudf-cu12
+    rmm-cu12
   ];
 
   # Add libcudf lib64 directory to autoPatchelf search path
