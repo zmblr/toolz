@@ -9,6 +9,7 @@
   scikit-build-core,
   pybind11,
   gzip,
+  bash,
   # C++ dependencies
   abseil-cpp,
   pybind11-abseil,
@@ -115,6 +116,13 @@ in
       add_library(pybind11_abseil::absl_casters INTERFACE IMPORTED)
       set_target_properties(pybind11_abseil::absl_casters PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${pybind11-abseil}/include")'
+    '';
+
+    postInstall = ''
+      # Install database fetching script
+      install -Dm755 $src/fetch_databases.sh $out/bin/fetch_databases.sh
+      substituteInPlace $out/bin/fetch_databases.sh \
+        --replace-fail '#!/bin/bash' '#!${bash}/bin/bash'
     '';
 
     nativeBuildInputs = [

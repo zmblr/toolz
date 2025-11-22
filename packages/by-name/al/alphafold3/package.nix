@@ -21,46 +21,6 @@
     "nvjitlink"
   ];
 
-  alphafold3-with-cli = alphafold3-with-pickles.overrideAttrs (oldAttrs: {
-    nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [makeWrapper];
-
-    postInstall =
-      (oldAttrs.postInstall or "")
-      + ''
-        mkdir -p $out/share/alphafold3
-        cp ${alphafold3-with-pickles.base.src}/run_alphafold.py $out/share/alphafold3/
-      '';
-
-    passthru =
-      (oldAttrs.passthru or {})
-      // {
-        # GPU environment setup: alphafold3.mkShellHook python
-        mkShellHook = python: let
-          cudaLibsPath =
-            lib.concatMapStringsSep ":" (
-              name: "${python}/${python3Packages.python.sitePackages}/nvidia/${name}/lib"
-            )
-            cudaModuleNames;
-          libcifppDataDir = "${python}/${python3Packages.python.sitePackages}/share/libcifpp";
-        in ''
-          export LD_LIBRARY_PATH="${pkgs.addDriverRunpath.driverLink}/lib:${cudaLibsPath}:''${LD_LIBRARY_PATH:-}"
-          export LIBCIFPP_DATA_DIR="${libcifppDataDir}"
-        '';
-      };
-
-    meta =
-      (oldAttrs.meta or {})
-      // {
-        description = "AlphaFold 3 structure prediction with pre-generated pickle files";
-        longDescription = ''
-          AlphaFold 3 predicts biomolecular structures and interactions.
-
-          Includes: CCD pickles, HMMER tools, CUDA 12.x support.
-          Requires: CUDA GPU, model weights from DeepMind (https://github.com/google-deepmind/alphafold3)
-        '';
-      };
-  });
-
   python3WithOverlay = pkgs.python3.override {
     packageOverrides = pythonOverlayFunc;
   };
@@ -72,26 +32,50 @@
     cudaModuleNames;
 in
   symlinkJoin {
-    name = "alphafold3-${alphafold3-with-cli.version}";
-    paths = [alphafold3-with-cli hmmer];
-    inherit (alphafold3-with-cli) meta;
+    name = "alphafold3-${alphafold3-with-pickles.version}";
+    paths = [alphafold3-with-pickles hmmer];
 
-    passthru =
-      alphafold3-with-cli.passthru
-      // {
-        pythonPackage = python3Packages.alphafold3;
-        pythonEnv = python-with-alphafold3;
-      };
+    passthru = {
+      # GPU environment setup: alphafold3.mkShellHook python
+      mkShellHook = python: let
+        cudaLibsPath' =
+          lib.concatMapStringsSep ":" (
+            name: "${python}/${python3Packages.python.sitePackages}/nvidia/${name}/lib"
+          )
+          cudaModuleNames;
+        libcifppDataDir = "${python}/${python3Packages.python.sitePackages}/share/libcifpp";
+      in ''
+        export LD_LIBRARY_PATH="${pkgs.addDriverRunpath.driverLink}/lib:${cudaLibsPath'}:''${LD_LIBRARY_PATH:-}"
+        export LIBCIFPP_DATA_DIR="${libcifppDataDir}"
+      '';
+
+      pythonPackage = python3Packages.alphafold3;
+      pythonEnv = python-with-alphafold3;
+    };
+
+    meta = {
+      description = "AlphaFold 3 structure prediction with pre-generated pickle files";
+      longDescription = ''
+        AlphaFold 3 predicts biomolecular structures and interactions.
+
+        Includes: CCD pickles, HMMER tools, CUDA 12.x support.
+        Requires: CUDA GPU, model weights from DeepMind (https://github.com/google-deepmind/alphafold3)
+      '';
+      mainProgram = "run_alphafold.py";
+      inherit (alphafold3-with-pickles.meta) homepage changelog license platforms;
+    };
 
     nativeBuildInputs = [makeWrapper];
     postBuild = ''
-      if [ -d ${alphafold3-with-cli}/lib ]; then
+      # Preserve Python package lib directory
+      if [ -d ${alphafold3-with-pickles}/lib ]; then
         rm -rf $out/lib
-        ln -s ${alphafold3-with-cli}/lib $out/lib
+        ln -s ${alphafold3-with-pickles}/lib $out/lib
       fi
 
-      makeWrapper ${python-with-alphafold3}/bin/python $out/bin/alphafold3 \
+      # Create wrapper with official script name for compatibility with upstream documentation
+      makeWrapper ${python-with-alphafold3}/bin/python $out/bin/run_alphafold.py \
         --prefix LD_LIBRARY_PATH : "${pkgs.addDriverRunpath.driverLink}/lib:${cudaLibsPath}" \
-        --add-flags "${alphafold3-with-cli}/share/alphafold3/run_alphafold.py"
+        --add-flags "${alphafold3-with-pickles.base.src}/run_alphafold.py"
     '';
   }
