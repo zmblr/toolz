@@ -47,47 +47,40 @@ in
         alphafold3-base = pySelf.callPackage ../by-name/al/alphafold3/base.nix {};
         inherit (alphafold3-base.passthru) componentsCif;
 
-        # Add components.cif for pickle generation
-        alphafold3-base-with-cif =
-          pySelf.pkgs.runCommand "python3.12-alphafold3-with-cif-${alphafold3-base.version}" {
-            inherit (alphafold3-base) meta;
-            passthru = alphafold3-base.passthru or {};
-            nativeBuildInputs = [pySelf.pkgs.gzip];
+        # Unified data package: components.cif + pickle files
+        # This derivation decompresses components.cif once and generates all pickle files
+        alphafold3-data =
+          pySelf.pkgs.runCommand "alphafold3-data-${alphafold3-base.version}" {
+            nativeBuildInputs = [
+              (pySelf.python.withPackages (_ps: [alphafold3-base]))
+              pySelf.pkgs.gzip
+            ];
           } ''
-            cp -r ${alphafold3-base} $out
-            chmod -R +w $out
+            mkdir -p $out/share/libcifpp
+            mkdir -p $out/constants/converters
 
-            SITE_PACKAGES="lib/${pySelf.python.libPrefix}/site-packages"
-            mkdir -p $out/$SITE_PACKAGES/share/libcifpp
-            gunzip -c ${componentsCif} > $out/$SITE_PACKAGES/share/libcifpp/components.cif
+            # Decompress components.cif once (used by both pickle generation and final package)
+            gunzip -c ${componentsCif} > $out/share/libcifpp/components.cif
 
-            chmod -R -w $out
-          '';
+            # Set LIBCIFPP_DATA_DIR for C++ module to find components.cif
+            export LIBCIFPP_DATA_DIR=$out/share/libcifpp
 
-        pythonEnv = pySelf.python.withPackages (_ps: [alphafold3-base-with-cif]);
-
-        # Generate CCD pickle files at build time
-        pickle-data =
-          pySelf.pkgs.runCommand "alphafold3-pickle-data" {
-            nativeBuildInputs = [pythonEnv pySelf.pkgs.gzip];
-          } ''
-            mkdir -p $out
-
+            # Verify C++ module can be imported
             python3 -c "import alphafold3.cpp" || {
               echo "Error: C++ module import failed"
               exit 1
             }
 
-            gunzip -c ${componentsCif} > $out/components.cif.tmp
-
+            # Generate CCD pickle using the decompressed cif file
             python3 -m alphafold3.constants.converters.ccd_pickle_gen \
-              $out/components.cif.tmp $out/ccd.pickle || exit 1
+              $out/share/libcifpp/components.cif \
+              $out/constants/converters/ccd.pickle || exit 1
 
-            rm $out/components.cif.tmp
+            # Generate chemical component sets pickle
             python3 <<EOF
             import pickle, re
 
-            with open('$out/ccd.pickle', 'rb') as f:
+            with open('$out/constants/converters/ccd.pickle', 'rb') as f:
                 ccd = pickle.load(f)
 
             glycans_linking, glycans_other, ions = [], [], []
@@ -99,7 +92,7 @@ in
                 if re.findall(r'\\bion\\b', comp['_chem_comp.name'][0].lower()):
                     ions.append(name)
 
-            with open('$out/chemical_component_sets.pickle', 'wb') as f:
+            with open('$out/constants/converters/chemical_component_sets.pickle', 'wb') as f:
                 pickle.dump({
                     'glycans_linking': frozenset(glycans_linking),
                     'glycans_other': frozenset(glycans_other),
@@ -110,24 +103,22 @@ in
       in
         alphafold3-base.overrideAttrs (oldAttrs: {
           pname = "alphafold3";
-          nativeBuildInputs = oldAttrs.nativeBuildInputs or [] ++ [pickle-data pySelf.pkgs.gzip];
 
           postInstall =
             (oldAttrs.postInstall or "")
             + ''
               SITE_PACKAGES="lib/${pySelf.python.libPrefix}/site-packages"
 
-              mkdir -p $out/$SITE_PACKAGES/share/libcifpp
-              gunzip -c ${componentsCif} > $out/$SITE_PACKAGES/share/libcifpp/components.cif
-
-              mkdir -p $out/$SITE_PACKAGES/alphafold3/constants/converters
-              cp ${pickle-data}/*.pickle $out/$SITE_PACKAGES/alphafold3/constants/converters/
+              # Install components.cif and pickle files from unified data package
+              cp -r ${alphafold3-data}/share $out/$SITE_PACKAGES/
+              mkdir -p $out/$SITE_PACKAGES/alphafold3/constants
+              cp -r ${alphafold3-data}/constants/converters $out/$SITE_PACKAGES/alphafold3/constants/
             '';
 
           passthru =
             (oldAttrs.passthru or {})
             // {
-              pickles = pickle-data;
+              data = alphafold3-data;
               base = alphafold3-base;
             };
 
