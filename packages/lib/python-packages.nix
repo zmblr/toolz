@@ -139,6 +139,8 @@ in
       cudf-cu12 = pySelf.callPackage (byNamePackage "cudf-cu12") {
         inherit (regularPackages) cuda-compat;
       };
+      dask-cuda = pySelf.callPackage (byNamePackage "dask-cuda") {};
+      distributed-ucxx-cu12 = pySelf.callPackage (byNamePackage "distributed-ucxx-cu12") {};
       libcudf-cu12 = pySelf.callPackage (byNamePackage "libcudf-cu12") {};
       libcugraph-cu12 = pySelf.callPackage (byNamePackage "libcugraph-cu12") {};
       libkvikio-cu12 = pySelf.callPackage (byNamePackage "libkvikio-cu12") {};
@@ -148,6 +150,7 @@ in
       libucxx-cu12 = pySelf.callPackage (byNamePackage "libucxx-cu12") {};
       pylibcugraph-cu12 = pySelf.callPackage (byNamePackage "pylibcugraph-cu12") {};
       pylibraft-cu12 = pySelf.callPackage (byNamePackage "pylibraft-cu12") {};
+      raft-dask-cu12 = pySelf.callPackage (byNamePackage "raft-dask-cu12") {};
       rmm-cu12 = pySelf.callPackage (byNamePackage "rmm-cu12") {};
       ucxx-cu12 = pySelf.callPackage (byNamePackage "ucxx-cu12") {};
       pylibcudf-cu12 = pySelf.callPackage (byNamePackage "pylibcudf-cu12") {};
