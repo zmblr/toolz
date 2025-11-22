@@ -2,24 +2,14 @@
   lib,
   callPackage,
   stdenv,
-  inputs ? {},
-  system ? null,
+  pkgs,
+  pythonOverlayFunc,
+  python3PackagesExtended,
 }: let
-  byNamePackage = name: let
-    firstTwo = builtins.substring 0 2 name;
-  in
-    ../by-name + "/${firstTwo}/${name}/package.nix";
-
-  externalPackages =
-    if inputs != {} && system != null
-    then {
-      seqtable = inputs.seqtable.packages.${system}.seqtable or null;
-      selexqc = inputs.selexqc.packages.${system}.selexqc or null;
-    }
-    else {};
+  byNamePackage = import ./by-name.nix;
 in
   {
-    # keep-sorted start
+    # Cross-platform packages
     aptasuite = callPackage (byNamePackage "aptasuite") {};
     bbtools = callPackage (byNamePackage "bbtools") {};
     edirect = callPackage (byNamePackage "edirect") {};
@@ -34,16 +24,21 @@ in
     ncbi-dataformat = callPackage (byNamePackage "ncbi-dataformat") {};
     ncbi-datasets = callPackage (byNamePackage "ncbi-datasets") {};
     nextflow = callPackage (byNamePackage "nextflow") {};
-    nupack = callPackage (byNamePackage "nupack") {};
     openzl = callPackage (byNamePackage "openzl") {};
+    pybind11-abseil = callPackage (byNamePackage "pybind11-abseil") {
+      inherit (python3PackagesExtended) pybind11;
+      python3 = python3PackagesExtended.python;
+    };
     vsearch = callPackage (byNamePackage "vsearch") {};
-    # keep-sorted end
   }
-  // externalPackages
   // lib.optionalAttrs stdenv.isLinux {
-    # keep-sorted start
+    # Linux-only packages
+    alphafold3 = callPackage (byNamePackage "alphafold3") {
+      inherit pkgs pythonOverlayFunc;
+      python3Packages = python3PackagesExtended;
+    };
     blast = callPackage (byNamePackage "blast") {};
+    cuda-compat = callPackage (byNamePackage "cuda-compat") {};
     interproscan = callPackage (byNamePackage "interproscan") {};
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
-    # keep-sorted end
   }
