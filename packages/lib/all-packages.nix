@@ -6,95 +6,37 @@
 }: let
   inherit (pkgs) lib callPackage;
 
-  byNamePackage = name: let
-    firstTwo = builtins.substring 0 2 name;
-  in
-    ../by-name + "/${firstTwo}/${name}/package.nix";
+  # Build Python overlay function
+  pythonOverlayFunc = callPackage ./python-packages.nix {inherit regularPackages;};
 
-  pythonOverlay = pySelf: _pySuper:
-    {
-      # keep-sorted start
-      cutadapt = pySelf.callPackage (byNamePackage "cutadapt") {};
-      dnaio = pySelf.callPackage (byNamePackage "dnaio") {};
-      forgi = pySelf.callPackage (byNamePackage "forgi") {};
-      logging-exceptions = pySelf.callPackage (byNamePackage "logging-exceptions") {};
-      nupack = pySelf.callPackage (byNamePackage "nupack") {};
-      xopen = pySelf.callPackage (byNamePackage "xopen") {};
-      # keep-sorted end
-    }
-    // lib.optionalAttrs pkgs.stdenv.isLinux {
-      viennarna-hpc = pySelf.toPythonModule (
-        callPackage (byNamePackage "viennarna-hpc") {
-          python3 = pySelf.python;
-        }
-      );
-    };
+  # Apply overlay to get Python packages
+  python3PackagesExtended = pkgs.python3Packages.overrideScope pythonOverlayFunc;
 
-  python3PackagesExtended = pkgs.python3Packages.overrideScope pythonOverlay;
-
-  regularPackages =
-    {
-      # keep-sorted start
-      aptasuite = callPackage (byNamePackage "aptasuite") {};
-      bbtools = callPackage (byNamePackage "bbtools") {};
-      edirect = callPackage (byNamePackage "edirect") {};
-      fastaptamer = callPackage (byNamePackage "fastaptamer") {};
-      flash = callPackage (byNamePackage "flash") {};
-      infernal = callPackage (byNamePackage "infernal") {};
-      jellyfish = callPackage (byNamePackage "jellyfish") {};
-      jellyfish-full = callPackage (byNamePackage "jellyfish-full") {};
-      kmc = callPackage (byNamePackage "kmc") {};
-      kmc-full = callPackage (byNamePackage "kmc-full") {};
-      locarna = callPackage (byNamePackage "locarna") {};
-      ncbi-dataformat = callPackage (byNamePackage "ncbi-dataformat") {};
-      ncbi-datasets = callPackage (byNamePackage "ncbi-datasets") {};
-      nextflow = callPackage (byNamePackage "nextflow") {};
-      openzl = callPackage (byNamePackage "openzl") {};
-      vsearch = callPackage (byNamePackage "vsearch") {};
-      # keep-sorted end
-    }
-    // lib.optionalAttrs pkgs.stdenv.isLinux {
-      # keep-sorted start
-      blast = callPackage (byNamePackage "blast") {};
-      interproscan = callPackage (byNamePackage "interproscan") {};
-      viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
-      # keep-sorted end
-    };
-
-  externalPackages = {
-    # keep-sorted start
-    selexqc = inputs.selexqc.packages.${system}.selexqc or null;
-    seqtable = inputs.seqtable.packages.${system}.seqtable or null;
-    # keep-sorted end
+  regularPackages = callPackage ./regular-packages.nix {
+    inherit pythonOverlayFunc python3PackagesExtended;
   };
+
+  externalPackages = import ./external-packages.nix {inherit inputs system;};
 in
   regularPackages
   // externalPackages
   // {
-    # Python packages to Expose at flake
-    inherit (python3PackagesExtended) cutadapt;
-    inherit (python3PackagesExtended) nupack;
+    # Expose Python packages at top level (CLI tools)
+    inherit (python3PackagesExtended) cutadapt nupack;
 
-    # Python package sets
+    # Expose Python package sets
     python3Packages = python3PackagesExtended;
 
-    python3 = pkgs.python3.override {
-      packageOverrides = pythonOverlay;
-    };
+    # Multi-version Python support
+    python3 = pkgs.python3.override {packageOverrides = pythonOverlayFunc;};
+    python311 = pkgs.python311.override {packageOverrides = pythonOverlayFunc;};
+    python312 = pkgs.python312.override {packageOverrides = pythonOverlayFunc;};
+    python313 = pkgs.python313.override {packageOverrides = pythonOverlayFunc;};
 
-    python311 = pkgs.python311.override {
-      packageOverrides = pythonOverlay;
-    };
-
-    python312 = pkgs.python312.override {
-      packageOverrides = pythonOverlay;
-    };
-
-    python313 = pkgs.python313.override {
-      packageOverrides = pythonOverlay;
-    };
-
-    python311Packages = pkgs.python311Packages.overrideScope pythonOverlay;
-    python312Packages = pkgs.python312Packages.overrideScope pythonOverlay;
-    python313Packages = pkgs.python313Packages.overrideScope pythonOverlay;
+    python311Packages = pkgs.python311Packages.overrideScope pythonOverlayFunc;
+    python312Packages = pkgs.python312Packages.overrideScope pythonOverlayFunc;
+    python313Packages = pkgs.python313Packages.overrideScope pythonOverlayFunc;
+  }
+  // lib.optionalAttrs pkgs.stdenv.isLinux {
+    inherit (regularPackages) alphafold3;
   }
