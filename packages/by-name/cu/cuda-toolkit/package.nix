@@ -13,7 +13,7 @@
 }:
 buildPythonPackage rec {
   pname = "cuda-toolkit";
-  version = "12.6.3";
+  version = "13.0.1";
   format = "wheel";
 
   disabled = pythonOlder "3.8";
@@ -22,9 +22,9 @@ buildPythonPackage rec {
     pname = "cuda_toolkit";
     inherit version;
     format = "wheel";
-    dist = "py3";
-    python = "py3";
-    hash = "";
+    dist = "py2.py3";
+    python = "py2.py3";
+    hash = "sha256-/HY0JMX13eXIZTWHd5KNI6oYoBZdOAmAvTp5IXYYj/o=";
   };
 
   # Provide common CUDA toolkit components

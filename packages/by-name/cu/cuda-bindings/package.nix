@@ -1,8 +1,10 @@
 {
   lib,
+  stdenv,
   buildPythonPackage,
   fetchPypi,
   pythonOlder,
+  autoPatchelfHook,
   cuda-pathfinder,
 }:
 buildPythonPackage rec {
@@ -22,6 +24,14 @@ buildPythonPackage rec {
     platform = "manylinux_2_24_x86_64.manylinux_2_28_x86_64";
     hash = "sha256-2ertesmOThumFhdrKR8/MJ8gr2pqeaNNp3OaqdvgYKc=";
   };
+
+  nativeBuildInputs = [
+    autoPatchelfHook
+  ];
+
+  buildInputs = [
+    stdenv.cc.cc.lib
+  ];
 
   dependencies = [
     cuda-pathfinder

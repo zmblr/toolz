@@ -10,7 +10,9 @@
   cuda-compat,
   pylibcudf-cu12,
   libcudf-cu12,
+  rmm-cu12,
   cachetools,
+  cuda-core,
   cuda-python,
   cupy,
   fsspec,
@@ -70,8 +72,10 @@ buildPythonPackage rec {
   dependencies = [
     # RAPIDS
     pylibcudf-cu12
+    rmm-cu12
     # Python packages
     cachetools
+    cuda-core
     cuda-python
     cupy
     fsspec

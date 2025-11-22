@@ -139,6 +139,9 @@ in
       cudf-cu12 = pySelf.callPackage (byNamePackage "cudf-cu12") {
         inherit (regularPackages) cuda-compat;
       };
+      cugraph-cu12 = pySelf.callPackage (byNamePackage "cugraph-cu12") {
+        inherit (regularPackages) cuda-compat;
+      };
       dask-cuda = pySelf.callPackage (byNamePackage "dask-cuda") {};
       dask-cudf-cu12 = pySelf.callPackage (byNamePackage "dask-cudf-cu12") {};
       distributed-ucxx-cu12 = pySelf.callPackage (byNamePackage "distributed-ucxx-cu12") {};
@@ -155,9 +158,4 @@ in
       rmm-cu12 = pySelf.callPackage (byNamePackage "rmm-cu12") {};
       ucxx-cu12 = pySelf.callPackage (byNamePackage "ucxx-cu12") {};
       pylibcudf-cu12 = pySelf.callPackage (byNamePackage "pylibcudf-cu12") {};
-      viennarna-hpc = pySelf.toPythonModule (
-        callPackage (byNamePackage "viennarna-hpc") {
-          python3 = pySelf.python;
-        }
-      );
     }
