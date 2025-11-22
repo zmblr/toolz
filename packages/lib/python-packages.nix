@@ -140,6 +140,7 @@ in
         inherit (regularPackages) cuda-compat;
       };
       dask-cuda = pySelf.callPackage (byNamePackage "dask-cuda") {};
+      dask-cudf-cu12 = pySelf.callPackage (byNamePackage "dask-cudf-cu12") {};
       distributed-ucxx-cu12 = pySelf.callPackage (byNamePackage "distributed-ucxx-cu12") {};
       libcudf-cu12 = pySelf.callPackage (byNamePackage "libcudf-cu12") {};
       libcugraph-cu12 = pySelf.callPackage (byNamePackage "libcugraph-cu12") {};
