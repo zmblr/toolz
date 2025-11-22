@@ -10,6 +10,11 @@ in
     {
       # Cross-platform Python packages
       # keep-sorted start
+      cuda-bindings = pySelf.callPackage (byNamePackage "cuda-bindings") {};
+      cuda-core = pySelf.callPackage (byNamePackage "cuda-core") {};
+      cuda-pathfinder = pySelf.callPackage (byNamePackage "cuda-pathfinder") {};
+      cuda-python = pySelf.callPackage (byNamePackage "cuda-python") {};
+      cuda-toolkit = pySelf.callPackage (byNamePackage "cuda-toolkit") {};
       cutadapt = pySelf.callPackage (byNamePackage "cutadapt") {};
       dnaio = pySelf.callPackage (byNamePackage "dnaio") {};
       finch-clust = pySelf.callPackage (byNamePackage "finch-clust") {};
@@ -34,6 +39,7 @@ in
       nvidia-nccl-cu12 = pySelf.callPackage (byNamePackage "nvidia-nccl-cu12") {};
       nvidia-nvjitlink-cu12 = pySelf.callPackage (byNamePackage "nvidia-nvjitlink-cu12") {};
       nvtx = pySelf.callPackage (byNamePackage "nvtx") {};
+      pyarrow = pySelf.callPackage (byNamePackage "pyarrow") {};
       pyclibrary = pySelf.callPackage (byNamePackage "pyclibrary") {};
       rapids-build-backend = pySelf.callPackage (byNamePackage "rapids-build-backend") {};
       typeguard = pySelf.callPackage (byNamePackage "typeguard") {};
