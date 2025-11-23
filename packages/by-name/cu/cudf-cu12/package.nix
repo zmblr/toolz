@@ -6,14 +6,13 @@
   autoPatchelfHook,
   addDriverRunpath,
   stdenv,
-  # CUDA packages
   cudaPackages_12,
   cuda-compat,
-  # RAPIDS dependencies
   pylibcudf-cu12,
   libcudf-cu12,
-  # Python dependencies
+  rmm-cu12,
   cachetools,
+  cuda-core,
   cuda-python,
   cupy,
   fsspec,
@@ -38,11 +37,11 @@ buildPythonPackage rec {
     pname = "cudf_cu12";
     inherit version;
     format = "wheel";
-    dist = "cp310";
-    python = "cp310";
-    abi = "cp310";
+    dist = "cp312";
+    python = "cp312";
+    abi = "cp312";
     platform = "manylinux_2_24_x86_64.manylinux_2_28_x86_64";
-    hash = "sha256-Ew7x8NkMrjM1ZFSukqUVQNzXB0d5teHZWxovl50Uzfo=";
+    hash = "sha256-M/toJDG5zYEsmAutjW5qvAcYLo7YxmWm+q2SuprZ89w=";
   };
 
   nativeBuildInputs = [
@@ -73,8 +72,10 @@ buildPythonPackage rec {
   dependencies = [
     # RAPIDS
     pylibcudf-cu12
+    rmm-cu12
     # Python packages
     cachetools
+    cuda-core
     cuda-python
     cupy
     fsspec
