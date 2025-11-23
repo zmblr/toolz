@@ -9,7 +9,7 @@
   networkx,
   biopython,
   appdirs,
-  logging_exceptions,
+  logging-exceptions,
   cython,
   matplotlib,
   beautifulsoup4,
@@ -38,7 +38,7 @@ buildPythonPackage rec {
     networkx
     biopython
     appdirs
-    logging_exceptions
+    logging-exceptions
     cython
     matplotlib
     beautifulsoup4

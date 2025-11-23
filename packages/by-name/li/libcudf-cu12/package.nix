@@ -5,7 +5,6 @@
   autoPatchelfHook,
   stdenv,
   zlib,
-  # Dependencies
   rapids-logger,
   libkvikio-cu12,
   librmm-cu12,

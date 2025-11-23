@@ -4,8 +4,8 @@
   fetchPypi,
   autoPatchelfHook,
   stdenv,
-  # Dependencies
   libcudf-cu12,
+  rmm-cu12,
 }:
 buildPythonPackage rec {
   pname = "pylibcudf-cu12";
@@ -16,14 +16,14 @@ buildPythonPackage rec {
     pname = "pylibcudf_cu12";
     inherit version;
     format = "wheel";
-    dist = "cp310";
-    python = "cp310";
-    abi = "cp310";
+    dist = "cp312";
+    python = "cp312";
+    abi = "cp312";
     platform =
       if stdenv.hostPlatform.isAarch64
       then "manylinux_2_24_aarch64.manylinux_2_28_aarch64"
       else "manylinux_2_24_x86_64.manylinux_2_28_x86_64";
-    hash = "sha256-YJ2vlTvx9b4bB0Ie8WSgFfxMzLqDoJodvgWgvYPRtM0=";
+    hash = "sha256-WJqkdpyRkKOHKzQXD7bCbQ9ngoFA+I0gBI3PZ+cxzUc=";
   };
 
   nativeBuildInputs = [
@@ -36,6 +36,7 @@ buildPythonPackage rec {
 
   dependencies = [
     libcudf-cu12
+    rmm-cu12
   ];
 
   # Add libcudf lib64 directory to autoPatchelf search path

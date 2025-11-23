@@ -9,6 +9,7 @@
   absl-py,
   jax,
   jaxlib,
+  jax-cuda12-plugin,
   triton,
   # Test dependencies
   pytestCheckHook,
@@ -34,13 +35,14 @@ buildPythonPackage rec {
     absl-py
     jax
     jaxlib
+    jax-cuda12-plugin
     triton
   ];
 
   # Set version for setuptools-scm since we're not using git
   env.SETUPTOOLS_SCM_PRETEND_VERSION = version;
 
-  # Skip import check - requires JAX with GPU support which isn't available at build time
+  # Skip import check - requires GPU at build time
   # pythonImportsCheck = ["jax_triton"];
 
   # Tests require GPU
