@@ -36,53 +36,53 @@
   };
 in
   buildPythonPackage rec {
-  pname = "zensical";
-  version = "0.0.9";
-  pyproject = true;
+    pname = "zensical";
+    version = "0.0.9";
+    pyproject = true;
 
-  src = fetchPypi {
-    inherit pname version;
-    hash = "sha256-W0Hi3dLxlpTm+muwIahQlaCfe9Cvt+pKtpTnPc3D2JI=";
-  };
+    src = fetchPypi {
+      inherit pname version;
+      hash = "sha256-W0Hi3dLxlpTm+muwIahQlaCfe9Cvt+pKtpTnPc3D2JI=";
+    };
 
-  cargoDeps = rustPlatform.fetchCargoVendor {
-    inherit src;
-    name = "${pname}-${version}";
-    hash = "sha256-n5PL2FhWKf7+TDcuQG8/xwViVXGcILdu60MXMbr3KUE=";
-  };
+    cargoDeps = rustPlatform.fetchCargoVendor {
+      inherit src;
+      name = "${pname}-${version}";
+      hash = "sha256-n5PL2FhWKf7+TDcuQG8/xwViVXGcILdu60MXMbr3KUE=";
+    };
 
-  nativeBuildInputs = [
-    cargo
-    rustPlatform.cargoSetupHook
-    rustPlatform.maturinBuildHook
-    rustc
-  ];
+    nativeBuildInputs = [
+      cargo
+      rustPlatform.cargoSetupHook
+      rustPlatform.maturinBuildHook
+      rustc
+    ];
 
-  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin (
-    with darwin.apple_sdk.frameworks; [
-      libiconv
-      Security
-      SystemConfiguration
-    ]
-  );
+    buildInputs = lib.optionals stdenv.hostPlatform.isDarwin (
+      with darwin.apple_sdk.frameworks; [
+        libiconv
+        Security
+        SystemConfiguration
+      ]
+    );
 
-  propagatedBuildInputs = [
-    click
-    deepmerge
-    markdown
-    pygments
-    pymdown-extensions-local
-    pyyaml
-    tomli
-  ];
+    propagatedBuildInputs = [
+      click
+      deepmerge
+      markdown
+      pygments
+      pymdown-extensions-local
+      pyyaml
+      tomli
+    ];
 
-  pythonImportsCheck = ["zensical"];
+    pythonImportsCheck = ["zensical"];
 
-  meta = with lib; {
-    description = "A modern static site generator built by the creators of Material for MkDocs";
-    homepage = "https://zensical.org/";
-    license = licenses.mit;
-    maintainers = [];
-    platforms = platforms.unix;
-  };
-}
+    meta = with lib; {
+      description = "A modern static site generator built by the creators of Material for MkDocs";
+      homepage = "https://zensical.org/";
+      license = licenses.mit;
+      maintainers = [];
+      platforms = platforms.unix;
+    };
+  }
