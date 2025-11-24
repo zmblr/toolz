@@ -40,6 +40,7 @@ in
       nvtx = pySelf.callPackage (byNamePackage "nvtx") {};
       pyarrow = pySelf.callPackage (byNamePackage "pyarrow") {};
       pyclibrary = pySelf.callPackage (byNamePackage "pyclibrary") {};
+      pymdown-extensions = pySelf.callPackage (byNamePackage "pymdown-extensions") {};
       rapids-build-backend = pySelf.callPackage (byNamePackage "rapids-build-backend") {};
       rapids-dask-dependency = pySelf.callPackage (byNamePackage "rapids-dask-dependency") {};
       rapids-logger = pySelf.callPackage (byNamePackage "rapids-logger") {};
