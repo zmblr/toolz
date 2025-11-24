@@ -40,7 +40,8 @@ in
       pyclibrary = pySelf.callPackage (byNamePackage "pyclibrary") {};
       # NOTE: pyarrow removed from global overlay to avoid conflicts
       # Now used as local dependency in cudf-cu12
-      pymdown-extensions = pySelf.callPackage (byNamePackage "pymdown-extensions") {};
+      # NOTE: pymdown-extensions removed from global overlay to avoid conflicts
+      # Now used as local dependency in zensical
       rapids-build-backend = pySelf.callPackage (byNamePackage "rapids-build-backend") {};
       rapids-dask-dependency = pySelf.callPackage (byNamePackage "rapids-dask-dependency") {};
       rapids-logger = pySelf.callPackage (byNamePackage "rapids-logger") {};
