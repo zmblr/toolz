@@ -225,54 +225,14 @@ in
     patches = [
       # Check LIBCIFPP_DATA_DIR before site.getsitepackages() for withPackages support
       ./libcifpp-env-var-first.patch
+      # Replace CMake FetchContent with system dependencies
+      ./cmake-use-system-deps.patch
     ];
 
-    # Replace CMake FetchContent with system dependencies
-    postPatch = ''
-          substituteInPlace CMakeLists.txt \
-            --replace-fail 'FetchContent_Declare(
-        abseil-cpp
-        GIT_REPOSITORY https://github.com/abseil/abseil-cpp
-        GIT_TAG d7aaad83b488fd62bd51c81ecf16cd938532cc0a # 20240116.2
-        EXCLUDE_FROM_ALL)
-
-      FetchContent_Declare(
-        pybind11
-        GIT_REPOSITORY https://github.com/pybind/pybind11
-        GIT_TAG 2e0815278cb899b20870a67ca8205996ef47e70f # v2.12.0
-        EXCLUDE_FROM_ALL)
-
-      FetchContent_Declare(
-        pybind11_abseil
-        GIT_REPOSITORY https://github.com/pybind/pybind11_abseil
-        GIT_TAG bddf30141f9fec8e577f515313caec45f559d319 # HEAD @ 2024-08-07
-        EXCLUDE_FROM_ALL)
-
-      FetchContent_Declare(
-        cifpp
-        GIT_REPOSITORY https://github.com/pdb-redo/libcifpp
-        GIT_TAG ac98531a2fc8daf21131faa0c3d73766efa46180 # v7.0.3
-        # Don'"'"'t `EXCLUDE_FROM_ALL` as necessary for build_data.
-      )
-
-      FetchContent_Declare(
-        dssp
-        GIT_REPOSITORY https://github.com/PDB-REDO/dssp
-        GIT_TAG 57560472b4260dc41f457706bc45fc6ef0bc0f10 # v4.4.7
-        EXCLUDE_FROM_ALL)
-
-      FetchContent_MakeAvailable(pybind11 abseil-cpp pybind11_abseil cifpp dssp)' \
-            '# Use system-provided dependencies
-      find_package(absl REQUIRED)
-      find_package(pybind11 REQUIRED)
-      find_package(cifpp REQUIRED)
-      find_package(dssp REQUIRED)
-      include_directories(${pybind11-abseil}/include)
-      link_directories(${pybind11-abseil}/lib)
-      add_library(pybind11_abseil::absl_casters INTERFACE IMPORTED)
-      set_target_properties(pybind11_abseil::absl_casters PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${pybind11-abseil}/include")'
-    '';
+    # CMake needs these environment variables (patch file uses them)
+    env = {
+      PYBIND11_ABSEIL_PATH = "${pybind11-abseil}";
+    };
 
     postInstall = ''
       # Install database fetching script
@@ -287,6 +247,9 @@ in
       scikit-build-core
       pybind11
       gzip
+      # CMake config packages must be in nativeBuildInputs for find_package to work
+      libcifpp
+      dssp
     ];
 
     buildInputs = [
