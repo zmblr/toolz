@@ -1,7 +1,7 @@
 {
   lib,
   stdenv,
-  regularPackages,
+  pkgs,
 }: let
   byNamePackage = import ./by-name.nix;
 in
@@ -18,12 +18,11 @@ in
       dnaio = pySelf.callPackage (byNamePackage "dnaio") {};
       finch-clust = pySelf.callPackage (byNamePackage "finch-clust") {};
       forgi = pySelf.callPackage (byNamePackage "forgi") {};
-      jax = pySelf.callPackage (byNamePackage "jax") {};
+      # NOTE: jax, jaxlib, jaxtyping removed from global overlay
+      # These are now local dependencies in alphafold3 to avoid conflicts with nixpkgs
       jax-cuda12-pjrt = pySelf.callPackage (byNamePackage "jax-cuda12-pjrt") {};
       jax-cuda12-plugin = pySelf.callPackage (byNamePackage "jax-cuda12-plugin") {};
       jax-triton = pySelf.callPackage (byNamePackage "jax-triton") {};
-      jaxlib = pySelf.callPackage (byNamePackage "jaxlib") {};
-      jaxtyping = pySelf.callPackage (byNamePackage "jaxtyping") {};
       logging-exceptions = pySelf.callPackage (byNamePackage "logging-exceptions") {};
       numba-cuda = pySelf.callPackage (byNamePackage "numba-cuda") {};
       nupack = pySelf.callPackage (byNamePackage "nupack") {};
@@ -38,13 +37,13 @@ in
       nvidia-nccl-cu12 = pySelf.callPackage (byNamePackage "nvidia-nccl-cu12") {};
       nvidia-nvjitlink-cu12 = pySelf.callPackage (byNamePackage "nvidia-nvjitlink-cu12") {};
       nvtx = pySelf.callPackage (byNamePackage "nvtx") {};
-      pyarrow = pySelf.callPackage (byNamePackage "pyarrow") {};
       pyclibrary = pySelf.callPackage (byNamePackage "pyclibrary") {};
+      # NOTE: pyarrow removed from global overlay to avoid conflicts
+      # Now used as local dependency in cudf-cu12
       pymdown-extensions = pySelf.callPackage (byNamePackage "pymdown-extensions") {};
       rapids-build-backend = pySelf.callPackage (byNamePackage "rapids-build-backend") {};
       rapids-dask-dependency = pySelf.callPackage (byNamePackage "rapids-dask-dependency") {};
       rapids-logger = pySelf.callPackage (byNamePackage "rapids-logger") {};
-      typeguard = pySelf.callPackage (byNamePackage "typeguard") {};
       xopen = pySelf.callPackage (byNamePackage "xopen") {};
       zensical = pySelf.callPackage (byNamePackage "zensical") {};
       # keep-sorted end
@@ -138,10 +137,10 @@ in
             };
         });
       cudf-cu12 = pySelf.callPackage (byNamePackage "cudf-cu12") {
-        inherit (regularPackages) cuda-compat;
+        inherit (pkgs) cuda-compat;
       };
       cugraph-cu12 = pySelf.callPackage (byNamePackage "cugraph-cu12") {
-        inherit (regularPackages) cuda-compat;
+        inherit (pkgs) cuda-compat;
       };
       dask-cuda = pySelf.callPackage (byNamePackage "dask-cuda") {};
       dask-cudf-cu12 = pySelf.callPackage (byNamePackage "dask-cudf-cu12") {};
