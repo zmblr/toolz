@@ -47,6 +47,8 @@ in
       in ''
         export LD_LIBRARY_PATH="${pkgs.addDriverRunpath.driverLink}/lib:${cudaLibsPath'}:''${LD_LIBRARY_PATH:-}"
         export LIBCIFPP_DATA_DIR="${libcifppDataDir}"
+        export TRITON_PTXAS_PATH="${pkgs.cudaPackages.cuda_nvcc}/bin/ptxas"
+        export XLA_FLAGS="''${XLA_FLAGS:+$XLA_FLAGS }--xla_gpu_cuda_data_dir=${pkgs.cudaPackages.cuda_nvcc}"
       '';
 
       pythonPackage = python3Packages.alphafold3;
