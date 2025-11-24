@@ -22,11 +22,7 @@
   hmmer,
   # Python dependencies
   absl-py,
-  chex,
-  dm-haiku,
   dm-tree,
-  jax-cuda12-plugin,
-  jax-triton,
   numpy,
   pillow,
   rdkit,
@@ -56,6 +52,13 @@
   hatchling,
   setuptools-scm,
   typing-extensions,
+  # For chex and dm-haiku overrides
+  chex,
+  dm-haiku,
+  jmp,
+  jax-cuda12-pjrt,
+  jax-cuda12-plugin,
+  jax-triton,
 }: let
   # Local JAX ecosystem for AlphaFold3 (version 0.4.34)
   # NOTE: Not exposed globally to avoid conflicts with nixpkgs JAX 0.6.0
@@ -157,13 +160,48 @@
       owner = "patrick-kidger";
       repo = "jaxtyping";
       rev = "refs/tags/v${version}";
-      hash = "sha256-/BWa3USKO/WzT2YDOnCdcrv2qmmHEPSfMhgOt9LHQYE=";
+      hash = "sha256-zkB8/+0PmBKDFhj9dd8QZ5Euglm+W3BBUM4dwFUYYW8=";
     };
 
     build-system = [hatchling];
     dependencies = [typeguard-local typing-extensions];
     pythonImportsCheck = ["jaxtyping"];
     doCheck = false;
+  };
+
+  # Override chex to use local JAX
+  chex-local = chex.override {
+    jax = jax-local;
+    jaxlib = jaxlib-local;
+  };
+
+  # Override jmp to use local JAX
+  jmp-local = jmp.override {
+    jax = jax-local;
+    jaxlib = jaxlib-local;
+  };
+
+  # Override dm-haiku to use local JAX and jmp
+  dm-haiku-local = dm-haiku.override {
+    jaxlib = jaxlib-local;
+    jmp = jmp-local;
+  };
+
+  # Override jax-cuda12-pjrt to use local JAX
+  jax-cuda12-pjrt-local = jax-cuda12-pjrt.override {
+    jax = jax-local;
+  };
+
+  # Override jax-cuda12-plugin to use local jax-cuda12-pjrt
+  jax-cuda12-plugin-local = jax-cuda12-plugin.override {
+    jax-cuda12-pjrt = jax-cuda12-pjrt-local;
+  };
+
+  # Override jax-triton to use local jax and jax-cuda12-plugin
+  jax-triton-local = jax-triton.override {
+    jax = jax-local;
+    jaxlib = jaxlib-local;
+    jax-cuda12-plugin = jax-cuda12-plugin-local;
   };
 
   # PDB snapshot (2025-01-01) for reproducibility
@@ -266,13 +304,13 @@ in
 
     dependencies = [
       absl-py
-      chex
-      dm-haiku
+      chex-local # Override to use local JAX 0.4.34
+      dm-haiku-local # Override to use local JAX 0.4.34
       dm-tree
       jax-local # Local JAX 0.4.34
       jaxlib-local # Local jaxlib 0.4.34
-      jax-cuda12-plugin
-      jax-triton
+      jax-cuda12-plugin-local # Override to use local JAX 0.4.34
+      jax-triton-local # Override to use local jax-cuda12-plugin
       jaxtyping-local # Local jaxtyping 0.2.34 with typeguard 2.13.3
       numpy
       pillow
