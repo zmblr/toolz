@@ -58,11 +58,6 @@ buildPythonPackage rec {
     tomli
   ];
 
-  # Skip runtime dependency version check
-  # pymdown-extensions in nixpkgs is 10.14.3, but zensical requires >=10.15
-  # This is a minor version difference and should work fine
-  dontCheckRuntimeDeps = true;
-
   pythonImportsCheck = ["zensical"];
 
   meta = with lib; {
