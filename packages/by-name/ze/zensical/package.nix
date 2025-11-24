@@ -13,11 +13,29 @@
   deepmerge,
   markdown,
   pygments,
-  pymdown-extensions,
   pyyaml,
   tomli,
-}:
-buildPythonPackage rec {
+  hatchling,
+}: let
+  # Local pymdown-extensions 10.17.1 (zensical specific requirement)
+  # NOTE: Not exposed globally to avoid conflicts with nixpkgs 10.14.3
+  pymdown-extensions-local = buildPythonPackage rec {
+    pname = "pymdown-extensions";
+    version = "10.17.1";
+    pyproject = true;
+
+    src = fetchPypi {
+      pname = "pymdown_extensions";
+      inherit version;
+      hash = "sha256-YNBf5V5/taHkdA/FdfrK0g3G7jp0jo09NrpEFC51zgM=";
+    };
+
+    build-system = [hatchling];
+    dependencies = [markdown pyyaml pygments];
+    pythonImportsCheck = ["pymdownx"];
+  };
+in
+  buildPythonPackage rec {
   pname = "zensical";
   version = "0.0.9";
   pyproject = true;
@@ -53,7 +71,7 @@ buildPythonPackage rec {
     deepmerge
     markdown
     pygments
-    pymdown-extensions
+    pymdown-extensions-local
     pyyaml
     tomli
   ];
