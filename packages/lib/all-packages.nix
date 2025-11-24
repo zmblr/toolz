@@ -22,7 +22,7 @@ in
   // externalPackages
   // {
     # Expose Python packages at top level (CLI tools)
-    inherit (python3PackagesExtended) cutadapt nupack;
+    inherit (python3PackagesExtended) cutadapt nupack zensical;
 
     # Expose Python package sets
     python3Packages = python3PackagesExtended;
