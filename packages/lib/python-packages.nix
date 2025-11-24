@@ -1,6 +1,5 @@
 {
   lib,
-  callPackage,
   stdenv,
   regularPackages,
 }: let
@@ -46,6 +45,7 @@ in
       rapids-logger = pySelf.callPackage (byNamePackage "rapids-logger") {};
       typeguard = pySelf.callPackage (byNamePackage "typeguard") {};
       xopen = pySelf.callPackage (byNamePackage "xopen") {};
+      zensical = pySelf.callPackage (byNamePackage "zensical") {};
       # keep-sorted end
     }
     // lib.optionalAttrs stdenv.isLinux
