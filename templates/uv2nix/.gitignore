@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.so
+dist/
+eggs/
+.eggs/
+lib/
+lib64/
+sdist/
+var/
+wheels/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+
+# Testing
+.pytest_cache/
+
+# Type checking
+.mypy_cache/
+
+# Nix
+result
+result-*
+
+# direnv
+.direnv/
+
+# OS
+.DS_Store
+Thumbs.db
