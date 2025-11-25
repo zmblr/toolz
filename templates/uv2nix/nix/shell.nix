@@ -3,15 +3,44 @@
     pkgs,
     python,
     workspace,
-    pythonSetEditable,
+    pythonSet,
     ...
   }: let
-    # Create a virtual environment with editable installs for development
-    virtualenv = pythonSetEditable.mkVirtualEnv "PROJ_NAME-dev-env" workspace.deps.all;
+    # Production virtual environment (non-editable)
+    virtualenv = pythonSet.mkVirtualEnv "PROJ_NAME-env" workspace.deps.all;
   in {
     devShells = {
-      # Default development shell with editable installs
-      default = pkgs.mkShell {
+      impure = pkgs.mkShell {
+        packages = [
+          python
+          pkgs.uv
+        ];
+
+        env = {
+          UV_PYTHON_DOWNLOADS = "never";
+        };
+
+        shellHook = ''
+          export REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+
+          if [[ ! -d ".venv" ]]; then
+            echo "Creating virtual environment..."
+            uv venv --quiet
+          fi
+
+          source .venv/bin/activate
+
+          if [[ ! -f "uv.lock" ]] || [[ "pyproject.toml" -nt "uv.lock" ]]; then
+            echo "Updating uv.lock..."
+            uv lock --quiet
+          fi
+
+          uv sync --quiet
+        '';
+      };
+
+      # Pure: Nix-managed shell for CI/deployment (requires uv.lock to exist)
+      pure = pkgs.mkShell {
         packages = [
           virtualenv
           pkgs.uv
@@ -26,24 +55,7 @@
         shellHook = ''
           unset PYTHONPATH
           export REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-        '';
-      };
-
-      # Alternative shell without editable installs (for testing production builds)
-      prod = pkgs.mkShell {
-        packages = [
-          pkgs.uv
-        ];
-
-        env = {
-          UV_NO_SYNC = "1";
-          UV_PYTHON = python.interpreter;
-          UV_PYTHON_DOWNLOADS = "never";
-        };
-
-        shellHook = ''
-          unset PYTHONPATH
-          export REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+          export VIRTUAL_ENV="${virtualenv}"
         '';
       };
     };
