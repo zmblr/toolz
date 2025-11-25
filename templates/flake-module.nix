@@ -11,6 +11,19 @@
     uv2nix = {
       path = ./uv2nix;
       description = "Python project template using uv2nix and flake-parts";
+      welcomeText = ''
+
+        uv2nix template created!
+
+        IMPORTANT: Run init-template before direnv or nix develop:
+
+          nix run github:zmblr/toolz#init-template -- <project-name> .
+
+        Then start developing:
+
+          direnv allow
+          # or: nix develop .#impure
+      '';
     };
   };
 

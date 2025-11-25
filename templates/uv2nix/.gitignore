@@ -15,9 +15,6 @@ wheels/
 # Virtual environments
 .venv/
 
-# Testing
-.pytest_cache/
-
 # Type checking
 .mypy_cache/
 
