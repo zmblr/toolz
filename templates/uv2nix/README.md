@@ -19,34 +19,62 @@ nix run .#init-template -- my-project-name .
 - [Nix](https://nixos.org/download.html) with flakes enabled
 - [direnv](https://direnv.net/) (optional, for automatic environment activation)
 
-## Quick Start
+## Development Shells
 
-### Enter Development Shell
+This template provides two development shells (no `default` - explicit choice required):
+
+| Shell    | Command                | Use Case                                                 |
+| -------- | ---------------------- | -------------------------------------------------------- |
+| `impure` | `nix develop .#impure` | Development, editable installs, `uv pip install` support |
+| `pure`   | `nix develop .#pure`   | CI/deployment, pure Nix-managed environment              |
+
+### Impure Shell (Development)
 
 ```bash
-# Using nix develop
-nix develop
+nix develop .#impure
 
-# Or with direnv (if .envrc is set up)
+# Or with direnv (recommended)
 direnv allow
 ```
 
-### Using uv for Package Management
+Features:
+
+- Automatic `.venv` creation and activation
+- Auto-creates/updates `uv.lock` when needed
+- Supports `uv add`, `uv pip install`, `uv sync`
+- Editable installs for immediate code changes
+
+### Pure Shell (CI/Deployment)
 
 ```bash
-# Add a dependency
-uv add requests
-
-# Add a dev dependency
-uv add --dev pytest
-
-# Sync dependencies (regenerates uv.lock)
-uv sync
+nix develop .#pure
 ```
 
-> **Note**: After modifying `pyproject.toml` or `uv.lock`, you may need to re-enter the shell with `nix develop` to pick up the changes.
+Features:
 
-### Building the Package
+- Reproducible Nix-managed environment
+- No mutable state (`.venv` not used)
+- Suitable for CI pipelines and deployment testing
+- Requires `uv.lock` to exist (run `impure` first)
+
+## Quick Start
+
+```bash
+# 1. Initialize template
+nix run github:zmblr/toolz#init-template -- my-project .
+
+# 2. Enter development shell (creates uv.lock)
+nix develop .#impure
+# Or: direnv allow
+
+# 3. Add dependencies
+uv add requests
+
+# 4. Install extra packages
+uv pip install some-package
+```
+
+## Building the Package
 
 ```bash
 # Build the default package (creates a virtual environment)
@@ -59,17 +87,7 @@ nix build .#full
 nix run
 ```
 
-### Running Tests
-
-```bash
-# In the development shell
-pytest
-
-# With coverage
-pytest --cov=PROJ_NAME_SNAKE
-```
-
-### Formatting and Linting
+## Formatting and Linting
 
 ```bash
 # Format all code
@@ -86,27 +104,25 @@ mypy src/
 .
 ├── flake.nix           # Nix flake definition
 ├── pyproject.toml      # Python project configuration
-├── uv.lock             # uv lock file (auto-generated)
+├── uv.lock             # uv lock file (auto-generated in impure shell)
 ├── nix/
 │   ├── uv2nix.nix      # uv2nix workspace configuration
 │   ├── packages.nix    # Package outputs
 │   ├── shell.nix       # Development shell configuration
 │   └── formatter.nix   # Code formatting configuration
-├── src/
-│   └── PROJ_NAME_SNAKE/
-│       └── __init__.py
-└── tests/
-    └── test_main.py
+└── src/
+    └── PROJ_NAME_SNAKE/
+        └── __init__.py
 ```
 
 ## Nix Flake Outputs
 
-| Output | Description |
-|--------|-------------|
+| Output             | Description                                   |
+| ------------------ | --------------------------------------------- |
 | `packages.default` | Virtual environment with default dependencies |
-| `packages.full` | Virtual environment with all dependencies |
-| `devShells.default` | Development shell with editable installs |
-| `devShells.prod` | Shell without editable installs (for testing) |
+| `packages.full`    | Virtual environment with all dependencies     |
+| `devShells.impure` | Development shell with editable installs      |
+| `devShells.pure`   | Pure Nix-managed shell (CI/deployment)        |
 
 ## How It Works
 
@@ -115,20 +131,28 @@ mypy src/
 3. **pyproject-nix** provides build infrastructure
 4. **flake-parts** organizes the flake into modular components
 
-The development shell uses editable installs, so changes to source code are immediately reflected without rebuilding.
+### Shell Comparison
+
+| Feature               | `impure` | `pure` |
+| --------------------- | -------- | ------ |
+| Reproducible          | -        | +      |
+| Editable installs     | +        | -      |
+| `uv pip install`      | +        | -      |
+| Auto venv activation  | +        | N/A    |
+| Auto `uv.lock` update | +        | -      |
+| CI suitable           | -        | +      |
 
 ## Updating Dependencies
 
 ```bash
+# In impure shell, dependencies sync automatically
+nix develop .#impure
+
 # Update a specific package
 uv lock --upgrade-package requests
 
 # Update all packages
 uv lock --upgrade
-
-# After updating, re-enter the shell
-exit
-nix develop
 ```
 
 ## License
