@@ -4,10 +4,10 @@
   system ? null,
   ...
 }: let
-  inherit (pkgs) lib callPackage;
+  inherit (pkgs) lib callPackage stdenv;
 
   # Build Python overlay function
-  pythonOverlayFunc = callPackage ./python-packages.nix {inherit regularPackages;};
+  pythonOverlayFunc = callPackage ./python-packages.nix {};
 
   # Apply overlay to get Python packages
   python3PackagesExtended = pkgs.python3Packages.overrideScope pythonOverlayFunc;
@@ -22,7 +22,7 @@ in
   // externalPackages
   // {
     # Expose Python packages at top level (CLI tools)
-    inherit (python3PackagesExtended) cutadapt nupack;
+    inherit (python3PackagesExtended) cutadapt nupack zensical;
 
     # Expose Python package sets
     python3Packages = python3PackagesExtended;
@@ -37,6 +37,6 @@ in
     python312Packages = pkgs.python312Packages.overrideScope pythonOverlayFunc;
     python313Packages = pkgs.python313Packages.overrideScope pythonOverlayFunc;
   }
-  // lib.optionalAttrs pkgs.stdenv.isLinux {
+  // lib.optionalAttrs stdenv.isLinux {
     inherit (regularPackages) alphafold3;
   }
