@@ -3,6 +3,7 @@
   buildPythonPackage,
   fetchFromGitHub,
   fetchurl,
+  fetchPypi,
   # Build
   cmake,
   ninja,
@@ -21,21 +22,13 @@
   hmmer,
   # Python dependencies
   absl-py,
-  chex,
-  dm-haiku,
   dm-tree,
-  jax,
-  jaxlib,
-  jax-cuda12-plugin,
-  jax-triton,
-  jaxtyping,
   numpy,
   pillow,
   rdkit,
   scipy,
   triton,
   tqdm,
-  typeguard,
   zstandard,
   # CUDA libraries
   nvidia-cuda-runtime-cu12,
@@ -47,7 +40,170 @@
   nvidia-cuda-cupti-cu12,
   nvidia-nccl-cu12,
   nvidia-nvjitlink-cu12,
+  # Build dependencies for local JAX packages
+  setuptools,
+  wheel,
+  ml-dtypes,
+  opt-einsum,
+  flatbuffers,
+  autoPatchelfHook,
+  stdenv,
+  python,
+  hatchling,
+  setuptools-scm,
+  typing-extensions,
+  # For chex and dm-haiku overrides
+  chex,
+  dm-haiku,
+  jmp,
+  jax-cuda12-pjrt,
+  jax-cuda12-plugin,
+  jax-triton,
 }: let
+  # Local JAX ecosystem for AlphaFold3 (version 0.4.34)
+  # NOTE: Not exposed globally to avoid conflicts with nixpkgs JAX 0.6.0
+  # Local typeguard 2.13.3 (required by jaxtyping 0.2.34)
+  typeguard-local = buildPythonPackage rec {
+    pname = "typeguard";
+    version = "2.13.3";
+    pyproject = true;
+
+    src = fetchFromGitHub {
+      owner = "agronholm";
+      repo = "typeguard";
+      rev = "refs/tags/${version}";
+      hash = "sha256-+WbfS+qzc2vFpYQ0PFME9UhZn9yL7qjdCxTV8cLivNk=";
+    };
+
+    build-system = [setuptools setuptools-scm];
+    dependencies = [typing-extensions];
+    env.SETUPTOOLS_SCM_PRETEND_VERSION = version;
+    pythonImportsCheck = ["typeguard"];
+    doCheck = false;
+  };
+
+  # Local jaxlib 0.4.34 (prebuilt wheel)
+  jaxlib-local = let
+    inherit (python) pythonVersion;
+
+    srcs = {
+      "3.10-x86_64-linux" = fetchPypi {
+        pname = "jaxlib";
+        version = "0.4.34";
+        format = "wheel";
+        python = "cp310";
+        abi = "cp310";
+        platform = "manylinux2014_x86_64";
+        hash = "sha256-2A5mSIVUbm1RbnJh/j0VnQpHq/V/vugpnzc2chg9wtI=";
+      };
+      "3.11-x86_64-linux" = fetchPypi {
+        pname = "jaxlib";
+        version = "0.4.34";
+        format = "wheel";
+        python = "cp311";
+        abi = "cp311";
+        platform = "manylinux2014_x86_64";
+        hash = "sha256-O8/jpDpkqaMo+KPKoQzXe8jbEz9X8F3VL6w2Oyq1v18=";
+      };
+      "3.12-x86_64-linux" = fetchPypi {
+        pname = "jaxlib";
+        version = "0.4.34";
+        format = "wheel";
+        python = "cp312";
+        abi = "cp312";
+        platform = "manylinux2014_x86_64";
+        hash = "sha256-SCcukDT/ho1DKM8AVaB4gv0r6T9Z37YoOvfeSR+dEpA=";
+      };
+    };
+  in
+    buildPythonPackage {
+      pname = "jaxlib";
+      version = "0.4.34";
+      format = "wheel";
+
+      src = srcs."${pythonVersion}-${stdenv.hostPlatform.system}"
+      or (throw "jaxlib 0.4.34 is not supported on ${stdenv.hostPlatform.system} with Python ${pythonVersion}");
+
+      nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [autoPatchelfHook];
+      buildInputs = [(lib.getLib stdenv.cc.cc)];
+      dependencies = [absl-py flatbuffers ml-dtypes scipy];
+      pythonImportsCheck = ["jaxlib"];
+    };
+
+  # Local jax 0.4.34 (source build)
+  jax-local = buildPythonPackage rec {
+    pname = "jax";
+    version = "0.4.34";
+    pyproject = true;
+
+    src = fetchFromGitHub {
+      owner = "jax-ml";
+      repo = "jax";
+      rev = "refs/tags/jax-v${version}";
+      hash = "sha256-f49YECYVkb5NpG/5GSSVW3D3J0Lruq2gI62iiXSOHkw=";
+    };
+
+    build-system = [setuptools wheel];
+    dependencies = [jaxlib-local ml-dtypes numpy opt-einsum scipy];
+    env.JAX_RELEASE = "1";
+    pythonImportsCheck = ["jax"];
+    doCheck = false;
+  };
+
+  # Local jaxtyping 0.2.34 (with local typeguard)
+  jaxtyping-local = buildPythonPackage rec {
+    pname = "jaxtyping";
+    version = "0.2.34";
+    pyproject = true;
+
+    src = fetchFromGitHub {
+      owner = "patrick-kidger";
+      repo = "jaxtyping";
+      rev = "refs/tags/v${version}";
+      hash = "sha256-zkB8/+0PmBKDFhj9dd8QZ5Euglm+W3BBUM4dwFUYYW8=";
+    };
+
+    build-system = [hatchling];
+    dependencies = [typeguard-local typing-extensions];
+    pythonImportsCheck = ["jaxtyping"];
+    doCheck = false;
+  };
+
+  # Override chex to use local JAX
+  chex-local = chex.override {
+    jax = jax-local;
+    jaxlib = jaxlib-local;
+  };
+
+  # Override jmp to use local JAX
+  jmp-local = jmp.override {
+    jax = jax-local;
+    jaxlib = jaxlib-local;
+  };
+
+  # Override dm-haiku to use local JAX and jmp
+  dm-haiku-local = dm-haiku.override {
+    jaxlib = jaxlib-local;
+    jmp = jmp-local;
+  };
+
+  # Override jax-cuda12-pjrt to use local JAX
+  jax-cuda12-pjrt-local = jax-cuda12-pjrt.override {
+    jax = jax-local;
+  };
+
+  # Override jax-cuda12-plugin to use local jax-cuda12-pjrt
+  jax-cuda12-plugin-local = jax-cuda12-plugin.override {
+    jax-cuda12-pjrt = jax-cuda12-pjrt-local;
+  };
+
+  # Override jax-triton to use local jax and jax-cuda12-plugin
+  jax-triton-local = jax-triton.override {
+    jax = jax-local;
+    jaxlib = jaxlib-local;
+    jax-cuda12-plugin = jax-cuda12-plugin-local;
+  };
+
   # PDB snapshot (2025-01-01) for reproducibility
   componentsCif = fetchurl {
     url = "https://pdbsnapshots.s3-us-west-2.amazonaws.com/20250101/pub/pdb/data/monomers/components.cif.gz";
@@ -69,54 +225,14 @@ in
     patches = [
       # Check LIBCIFPP_DATA_DIR before site.getsitepackages() for withPackages support
       ./libcifpp-env-var-first.patch
+      # Replace CMake FetchContent with system dependencies
+      ./cmake-use-system-deps.patch
     ];
 
-    # Replace CMake FetchContent with system dependencies
-    postPatch = ''
-          substituteInPlace CMakeLists.txt \
-            --replace-fail 'FetchContent_Declare(
-        abseil-cpp
-        GIT_REPOSITORY https://github.com/abseil/abseil-cpp
-        GIT_TAG d7aaad83b488fd62bd51c81ecf16cd938532cc0a # 20240116.2
-        EXCLUDE_FROM_ALL)
-
-      FetchContent_Declare(
-        pybind11
-        GIT_REPOSITORY https://github.com/pybind/pybind11
-        GIT_TAG 2e0815278cb899b20870a67ca8205996ef47e70f # v2.12.0
-        EXCLUDE_FROM_ALL)
-
-      FetchContent_Declare(
-        pybind11_abseil
-        GIT_REPOSITORY https://github.com/pybind/pybind11_abseil
-        GIT_TAG bddf30141f9fec8e577f515313caec45f559d319 # HEAD @ 2024-08-07
-        EXCLUDE_FROM_ALL)
-
-      FetchContent_Declare(
-        cifpp
-        GIT_REPOSITORY https://github.com/pdb-redo/libcifpp
-        GIT_TAG ac98531a2fc8daf21131faa0c3d73766efa46180 # v7.0.3
-        # Don'"'"'t `EXCLUDE_FROM_ALL` as necessary for build_data.
-      )
-
-      FetchContent_Declare(
-        dssp
-        GIT_REPOSITORY https://github.com/PDB-REDO/dssp
-        GIT_TAG 57560472b4260dc41f457706bc45fc6ef0bc0f10 # v4.4.7
-        EXCLUDE_FROM_ALL)
-
-      FetchContent_MakeAvailable(pybind11 abseil-cpp pybind11_abseil cifpp dssp)' \
-            '# Use system-provided dependencies
-      find_package(absl REQUIRED)
-      find_package(pybind11 REQUIRED)
-      find_package(cifpp REQUIRED)
-      find_package(dssp REQUIRED)
-      include_directories(${pybind11-abseil}/include)
-      link_directories(${pybind11-abseil}/lib)
-      add_library(pybind11_abseil::absl_casters INTERFACE IMPORTED)
-      set_target_properties(pybind11_abseil::absl_casters PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${pybind11-abseil}/include")'
-    '';
+    # CMake needs these environment variables (patch file uses them)
+    env = {
+      PYBIND11_ABSEIL_PATH = "${pybind11-abseil}";
+    };
 
     postInstall = ''
       # Install database fetching script
@@ -131,6 +247,9 @@ in
       scikit-build-core
       pybind11
       gzip
+      # CMake config packages must be in nativeBuildInputs for find_package to work
+      libcifpp
+      dssp
     ];
 
     buildInputs = [
@@ -148,21 +267,20 @@ in
 
     dependencies = [
       absl-py
-      chex
-      dm-haiku
+      chex-local # Override to use local JAX 0.4.34
+      dm-haiku-local # Override to use local JAX 0.4.34
       dm-tree
-      jax
-      jaxlib
-      jax-cuda12-plugin
-      jax-triton
-      jaxtyping
+      jax-local # Local JAX 0.4.34
+      jaxlib-local # Local jaxlib 0.4.34
+      jax-cuda12-plugin-local # Override to use local JAX 0.4.34
+      jax-triton-local # Override to use local jax-cuda12-plugin
+      jaxtyping-local # Local jaxtyping 0.2.34 with typeguard 2.13.3
       numpy
       pillow
       rdkit
       scipy
       triton
       tqdm
-      typeguard
       zstandard
       nvidia-cuda-runtime-cu12
       nvidia-cublas-cu12
