@@ -1,7 +1,3 @@
-# uv2nix workspace and Python package set configuration
-#
-# This module loads the uv workspace and creates overlays for Python packages.
-# It provides a pythonSet that can be used to build packages and virtual environments.
 {inputs, ...}: {
   perSystem = {
     pkgs,
@@ -15,7 +11,6 @@
 
     # Create an overlay from the workspace for regular (non-editable) builds
     overlay = workspace.mkPyprojectOverlay {
-      # Prefer wheels for faster builds, use "sdist" if you need source builds
       sourcePreference = "wheel";
     };
 
@@ -46,7 +41,6 @@
     # Apply editable overlay for development builds
     pythonSetEditable = pythonSet.overrideScope editableOverlay;
   in {
-    # Export workspace and Python sets for use in other modules
     _module.args = {
       inherit workspace pythonSet pythonSetEditable python;
     };
