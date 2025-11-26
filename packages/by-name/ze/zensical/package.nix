@@ -6,7 +6,6 @@
   rustPlatform,
   rustc,
   libiconv,
-  darwin,
   stdenv,
   # Python dependencies
   click,
@@ -58,13 +57,9 @@ in
       rustc
     ];
 
-    buildInputs = lib.optionals stdenv.hostPlatform.isDarwin (
-      with darwin.apple_sdk.frameworks; [
-        libiconv
-        Security
-        SystemConfiguration
-      ]
-    );
+    buildInputs = lib.optionals stdenv.hostPlatform.isDarwin [
+      libiconv
+    ];
 
     propagatedBuildInputs = [
       click
