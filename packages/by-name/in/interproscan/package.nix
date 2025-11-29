@@ -1,9 +1,9 @@
 {
   lib,
   stdenv,
+  buildFHSEnv,
   fetchurl,
-  autoPatchelfHook,
-  makeWrapper,
+  writeShellScript,
   perl,
   python3,
   jdk11,
@@ -11,112 +11,146 @@
   bzip2,
   gfortran,
   pcre2,
-  coreutils,
-}:
-stdenv.mkDerivation rec {
-  pname = "interproscan";
+}: let
   version = "5.76-107.0";
 
-  src = fetchurl {
-    url = "https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/${version}/interproscan-${version}-64-bit.tar.gz";
-    hash = "sha256-SKf2p3dRT4RPJj2sWQgFC/8AwoE0EnGAglgabQbrXdc=";
-  };
+  interproscan-unwrapped = stdenv.mkDerivation {
+    pname = "interproscan-unwrapped";
+    inherit version;
 
-  nativeBuildInputs = [
-    autoPatchelfHook
-    makeWrapper
-  ];
+    src = fetchurl {
+      url = "https://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/${version}/interproscan-${version}-64-bit.tar.gz";
+      hash = "sha256-SKf2p3dRT4RPJj2sWQgFC/8AwoE0EnGAglgabQbrXdc=";
+    };
 
-  buildInputs = [
-    stdenv.cc.cc.lib
-    zlib
-    bzip2
-    pcre2
-    gfortran.cc.lib
-  ];
+    sourceRoot = ".";
 
-  sourceRoot = ".";
+    dontStrip = true;
+    dontPatchELF = true;
+    dontConfigure = true;
+    dontBuild = true;
 
-  dontStrip = true;
+    installPhase = ''
+      runHook preInstall
 
-  dontConfigure = true;
+      cd interproscan-${version}
 
-  dontBuild = true;
+      mkdir -p $out/share/interproscan
+      cp -r ./* $out/share/interproscan/
+      chmod -R u+w $out/share/interproscan
 
-  installPhase = ''
-    runHook preInstall
+      # Make scripts executable
+      find $out/share/interproscan -type f -name "*.sh" -exec chmod +x {} \;
+      find $out/share/interproscan -type f -name "*.pl" -exec chmod +x {} \;
+      find $out/share/interproscan -type f -name "*.py" -exec chmod +x {} \;
+      find $out/share/interproscan/bin -type f -exec chmod +x {} \;
 
-    cd interproscan-${version}
+      # Fix setup.py to use absolute paths for HMM indexing
+      substituteInPlace $out/share/interproscan/setup.py \
+        --replace-warn "cmd = ['bin/" "cmd = ['$out/share/interproscan/bin/"
 
+      # Remove LevelDB LOCK files (runtime artifacts that prevent database access)
+      find $out/share/interproscan -name "LOCK" -type f -delete
 
-    mkdir -p $out/{bin,share/interproscan}
-
-
-    cp -r ./* $out/share/interproscan/
-
-
-    chmod -R u+w $out/share/interproscan
-
-    runHook postInstall
-  '';
-
-  postInstall = ''
-    cd $out/share/interproscan
-
-
-    substituteInPlace interproscan.properties \
-      --replace-warn "perl.command=perl" "perl.command=${perl}/bin/perl" \
-      --replace-warn "python3.command=python3" "python3.command=${python3}/bin/python3"
-
-
-    find $out/share/interproscan -type f -name "*.sh" -exec chmod +x {} \;
-    find $out/share/interproscan/bin -type f -exec chmod +x {} \;
-
-
-    substituteInPlace setup.py \
-      --replace-warn "cmd = ['bin/" "cmd = ['$out/share/interproscan/bin/"
-
-
-
-    echo "Indexing HMM models..."
-    export PATH="$out/share/interproscan/bin/hmmer/hmmer3/3.3:$PATH"
-    ${python3}/bin/python3 setup.py -f interproscan.properties || {
-      echo "Warning: HMM indexing failed, but continuing..."
-      echo "You may need to run setup.py manually after installation"
-    }
-
-
-    makeWrapper $out/share/interproscan/interproscan.sh $out/bin/interproscan \
-      --set JAVA_HOME "${jdk11}" \
-      --set INTERPROSCAN_HOME "$out/share/interproscan" \
-      --prefix PATH : "${lib.makeBinPath [
-      jdk11
-      perl
-      python3
-      coreutils
-    ]}" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
-      stdenv.cc.cc.lib
-      zlib
-      bzip2
-      pcre2
-      gfortran.cc.lib
-    ]}"
-  '';
-
-  meta = with lib; {
-    description = "Protein sequence analysis and classification";
-    longDescription = ''
-      InterProScan is a comprehensive tool that combines different protein
-      signature recognition methods into one resource.
-
-      Note: HMM models may need to be indexed on first use if automatic
-      indexing fails during build. Run:
-        cd $INTERPROSCAN_HOME && python3 setup.py -f interproscan.properties
+      runHook postInstall
     '';
-    homepage = "https://www.ebi.ac.uk/interpro/";
-    license = licenses.asl20;
-    platforms = ["x86_64-linux"];
-    sourceProvenance = with sourceTypes; [binaryNativeCode];
+
+    meta = {
+      description = "InterProScan - unwrapped distribution";
+      platforms = ["x86_64-linux"];
+    };
   };
-}
+
+  runScript = writeShellScript "interproscan-run" ''
+    export JAVA_HOME="${jdk11}"
+    export INTERPROSCAN_HOME="${interproscan-unwrapped}/share/interproscan"
+    export PATH="${jdk11}/bin:${interproscan-unwrapped}/share/interproscan/bin:$PATH"
+
+    # Save original working directory for output files
+    ORIG_PWD="$PWD"
+
+    # Create a writable temp directory if not already set
+    if [[ -z "$INTERPROSCAN_TEMP" ]]; then
+      INTERPROSCAN_TEMP="''${TMPDIR:-/tmp}/interproscan-$$"
+      mkdir -p "$INTERPROSCAN_TEMP"
+      trap "rm -rf '$INTERPROSCAN_TEMP'" EXIT
+    fi
+
+    # Run from original directory so relative paths work correctly
+    exec "${interproscan-unwrapped}/share/interproscan/interproscan.sh" \
+      -T "$INTERPROSCAN_TEMP" \
+      -u "$ORIG_PWD" \
+      "$@"
+  '';
+in
+  buildFHSEnv {
+    name = "interproscan";
+    inherit (interproscan-unwrapped) version;
+
+    targetPkgs = pkgs:
+      with pkgs; [
+        # Core runtime
+        bash
+        coreutils
+        gnugrep
+        gnused
+        gawk
+        findutils
+        gzip
+        gnutar
+
+        # InterProScan requirements
+        jdk11
+        perl
+        python3
+
+        # Libraries needed by bundled binaries
+        stdenv.cc.cc.lib
+        zlib
+        bzip2
+        pcre2
+        gfortran.cc.lib
+
+        # Additional libraries that might be needed
+        libgcc
+        glibc
+      ];
+
+    inherit runScript;
+
+    extraInstallCommands = ''
+      # Create setup script for HMM indexing (run once after installation)
+      mkdir -p $out/bin
+      cat > $out/bin/interproscan-setup <<EOF
+      #!/usr/bin/env bash
+      echo "Indexing HMM models for InterProScan..."
+      echo "This may take several minutes on first run."
+      exec "$out/bin/interproscan" -c "
+        cd ${interproscan-unwrapped}/share/interproscan
+        export PATH=${interproscan-unwrapped}/share/interproscan/bin/hmmer/hmmer3/3.3:\\\$PATH
+        python3 setup.py -f interproscan.properties
+      "
+      EOF
+      chmod +x $out/bin/interproscan-setup
+    '';
+
+    meta = with lib; {
+      description = "Protein sequence analysis and classification";
+      longDescription = ''
+        InterProScan is a comprehensive tool that combines different protein
+        signature recognition methods into one resource.
+
+        This package uses buildFHSEnv to provide a standard Linux environment
+        for the bundled pre-compiled binaries and scripts that assume FHS paths.
+
+        Note: HMM models need to be indexed on first use. Run:
+          interproscan-setup
+        Or the indexing will happen automatically on first interproscan run.
+      '';
+      homepage = "https://www.ebi.ac.uk/interpro/";
+      license = licenses.asl20;
+      mainProgram = "interproscan";
+      platforms = ["x86_64-linux"];
+      sourceProvenance = with sourceTypes; [binaryNativeCode];
+    };
+  }
