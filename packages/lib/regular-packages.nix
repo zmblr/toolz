@@ -32,13 +32,16 @@ in
     vsearch = callPackage (byNamePackage "vsearch") {};
   }
   // lib.optionalAttrs stdenv.isLinux {
-    # Linux-only packages
-    alphafold3 = callPackage (byNamePackage "alphafold3") {
-      inherit pkgs pythonOverlayFunc;
-      python3Packages = python3PackagesExtended;
-    };
+    # Linux-only packages (cross-architecture)
     blast = callPackage (byNamePackage "blast") {};
     cuda-compat = callPackage (byNamePackage "cuda-compat") {};
     interproscan = callPackage (byNamePackage "interproscan") {};
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
+  }
+  // lib.optionalAttrs (stdenv.isLinux && stdenv.isx86_64) {
+    # x86_64-linux only packages (CUDA wheels only available for x86_64)
+    alphafold3 = callPackage (byNamePackage "alphafold3") {
+      inherit pkgs pythonOverlayFunc;
+      python3Packages = python3PackagesExtended;
+    };
   }
