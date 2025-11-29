@@ -34,14 +34,14 @@ in
   }
   // lib.optionalAttrs stdenv.isLinux {
     # Linux-only packages (cross-architecture)
-    alphafold3 = callPackage (byNamePackage "alphafold3") {
-      inherit pkgs pythonOverlayFunc;
-      python3Packages = python3PackagesExtended;
-    };
     blast = callPackage (byNamePackage "blast") {};
     cuda-compat = callPackage (byNamePackage "cuda-compat") {};
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
   }
   // lib.optionalAttrs (stdenv.isLinux && stdenv.isx86_64) {
+    alphafold3 = callPackage (byNamePackage "alphafold3") {
+      inherit pkgs pythonOverlayFunc;
+      python3Packages = python3PackagesExtended;
+    };
     interproscan = callPackage (byNamePackage "interproscan") {};
   }
