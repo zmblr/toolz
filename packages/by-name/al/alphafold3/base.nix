@@ -83,6 +83,7 @@
   };
 
   # Local jaxlib 0.4.34 (prebuilt wheel)
+  # NOTE: dist parameter must be set to PyPI's hash-based path for platform-specific wheels
   jaxlib-local = let
     inherit (python) pythonVersion;
 
@@ -91,6 +92,7 @@
         pname = "jaxlib";
         version = "0.4.34";
         format = "wheel";
+        dist = "e4/b0/a5bd34643c070e50829beec217189eab1acdfea334df1f9ddb4e5f8bec0f";
         python = "cp310";
         abi = "cp310";
         platform = "manylinux2014_x86_64";
@@ -100,6 +102,7 @@
         pname = "jaxlib";
         version = "0.4.34";
         format = "wheel";
+        dist = "c7/d0/6bc81c0b1d507f403e6085ce76a429e6d7f94749d742199252e299dd1424";
         python = "cp311";
         abi = "cp311";
         platform = "manylinux2014_x86_64";
@@ -109,6 +112,7 @@
         pname = "jaxlib";
         version = "0.4.34";
         format = "wheel";
+        dist = "e7/0d/4faf839e3c8ce2a5b615df64427be3e870899c72c0ebfb5859348150aba1";
         python = "cp312";
         abi = "cp312";
         platform = "manylinux2014_x86_64";
@@ -313,6 +317,6 @@ in
       homepage = "https://github.com/google-deepmind/alphafold3";
       changelog = "https://github.com/google-deepmind/alphafold3/releases/tag/v${version}";
       license = lib.licenses.cc-by-nc-sa-40;
-      platforms = lib.platforms.linux;
+      platforms = ["x86_64-linux"]; # jaxlib 0.4.34 wheels only available for x86_64
     };
   }
