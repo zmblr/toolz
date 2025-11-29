@@ -15,6 +15,7 @@ in
     edirect = callPackage (byNamePackage "edirect") {};
     fastaptamer = callPackage (byNamePackage "fastaptamer") {};
     flash = callPackage (byNamePackage "flash") {};
+    foldseek = callPackage (byNamePackage "foldseek") {};
     infernal = callPackage (byNamePackage "infernal") {};
     jellyfish = callPackage (byNamePackage "jellyfish") {};
     jellyfish-full = callPackage (byNamePackage "jellyfish-full") {};
@@ -42,6 +43,5 @@ in
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
   }
   // lib.optionalAttrs (stdenv.isLinux && stdenv.isx86_64) {
-    # x86_64-linux only packages (binary distributions)
     interproscan = callPackage (byNamePackage "interproscan") {};
   }

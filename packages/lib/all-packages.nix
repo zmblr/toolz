@@ -37,6 +37,6 @@ in
     python312Packages = pkgs.python312Packages.overrideScope pythonOverlayFunc;
     python313Packages = pkgs.python313Packages.overrideScope pythonOverlayFunc;
   }
-  // lib.optionalAttrs stdenv.isLinux {
+  // lib.optionalAttrs (stdenv.isLinux && stdenv.isx86_64) {
     inherit (regularPackages) alphafold3;
   }
