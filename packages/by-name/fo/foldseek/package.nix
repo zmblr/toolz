@@ -28,6 +28,12 @@ in
       fetchSubmodules = true;
     };
 
+    postPatch = ''
+      # Fix shebang for xxdi.pl Perl scripts used in build
+      patchShebangs lib/mmseqs/cmake/xxdi.pl
+      patchShebangs cmake/xxdi.pl
+    '';
+
     nativeBuildInputs =
       [
         cmake
