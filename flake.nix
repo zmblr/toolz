@@ -1,5 +1,9 @@
 {
   description = "toolz";
+  nixConfig = {
+    extra-substituters = ["https://cache.sjanglab.org/toolz"];
+    extra-trusted-public-keys = ["toolz:TOX1KA7jJYaosx/t7tch0x5GaUws3I4dPW4TgwFjHKk="];
+  };
   outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = import inputs.systems;
