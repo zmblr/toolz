@@ -1,0 +1,239 @@
+:root {
+  --bg: #0d1117;
+  --fg: #c9d1d9;
+  --accent: #58a6ff;
+  --card-bg: #161b22;
+  --border: #30363d;
+  --code-bg: #0d1117;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+header { text-align: center; margin-bottom: 2rem; }
+header h1 { color: var(--accent); font-size: 2.5rem; }
+header p { color: #8b949e; }
+
+.search-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.branch-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#branch {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--fg);
+  font-size: 1rem;
+}
+
+#search {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--fg);
+  font-size: 1rem;
+}
+
+#search:focus { outline: none; border-color: var(--accent); }
+
+#count { color: #8b949e; white-space: nowrap; }
+
+#results { display: grid; gap: 1rem; }
+
+.package {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.package:hover {
+  border-color: var(--accent);
+}
+
+.package.expanded {
+  border-color: var(--accent);
+}
+
+.package-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.package-name { color: var(--accent); font-weight: 600; font-size: 1.1rem; }
+.package-version { color: #8b949e; font-size: 0.9rem; }
+.package-description { color: var(--fg); }
+.package-meta { margin-top: 0.5rem; font-size: 0.85rem; color: #8b949e; }
+.package-meta a { color: var(--accent); text-decoration: none; }
+.package-meta a:hover { text-decoration: underline; }
+
+/* Package details (expanded view) */
+.package-details {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--code-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.package-details h4 {
+  color: var(--fg);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+.package-details h4:first-child {
+  margin-top: 0;
+}
+
+.code-block {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+}
+
+.code-block code {
+  flex: 1;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  font-size: 0.85rem;
+  color: var(--fg);
+  overflow-x: auto;
+}
+
+.copy-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  opacity: 0.9;
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.info-table td {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.info-table td:first-child {
+  color: #8b949e;
+  width: 120px;
+}
+
+.info-table td:last-child {
+  color: var(--fg);
+}
+
+.info-table a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.info-table a:hover {
+  text-decoration: underline;
+}
+
+.info-table code {
+  background: var(--code-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.75rem;
+  border-radius: 3px;
+  background: var(--border);
+  color: var(--fg);
+  margin-left: 0.25rem;
+}
+
+.badge.free {
+  background: #238636;
+  color: #fff;
+}
+
+.badge.unfree {
+  background: #da3633;
+  color: #fff;
+}
+
+.badge.broken {
+  background: #9e6a03;
+  color: #fff;
+}
+
+.license-badge {
+  font-size: 0.85rem;
+}
+
+.license-badge.unfree {
+  color: #f85149;
+}
+
+/* Long description */
+.long-description {
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  color: #8b949e;
+  background: var(--card-bg);
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+footer {
+  margin-top: 3rem;
+  text-align: center;
+  color: #8b949e;
+}
+footer a { color: var(--accent); text-decoration: none; }
