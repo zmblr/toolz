@@ -24,8 +24,8 @@ in
     # Expose Python packages at top level (CLI tools)
     inherit (python3PackagesExtended) cutadapt nupack zensical;
 
-    # Expose Python package sets
-    python3Packages = python3PackagesExtended;
+    # Expose Python package sets (with recurseIntoAttrs for enumeration)
+    python3Packages = lib.recurseIntoAttrs python3PackagesExtended;
 
     # Multi-version Python support
     python3 = pkgs.python3.override {packageOverrides = pythonOverlayFunc;};
@@ -33,9 +33,9 @@ in
     python312 = pkgs.python312.override {packageOverrides = pythonOverlayFunc;};
     python313 = pkgs.python313.override {packageOverrides = pythonOverlayFunc;};
 
-    python311Packages = pkgs.python311Packages.overrideScope pythonOverlayFunc;
-    python312Packages = pkgs.python312Packages.overrideScope pythonOverlayFunc;
-    python313Packages = pkgs.python313Packages.overrideScope pythonOverlayFunc;
+    python311Packages = lib.recurseIntoAttrs (pkgs.python311Packages.overrideScope pythonOverlayFunc);
+    python312Packages = lib.recurseIntoAttrs (pkgs.python312Packages.overrideScope pythonOverlayFunc);
+    python313Packages = lib.recurseIntoAttrs (pkgs.python313Packages.overrideScope pythonOverlayFunc);
   }
   // lib.optionalAttrs (stdenv.isLinux && stdenv.isx86_64) {
     inherit (regularPackages) alphafold3;

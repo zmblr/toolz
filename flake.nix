@@ -11,6 +11,7 @@
         ./packages/flake-module.nix
         ./overlays/flake-module.nix
         ./templates/flake-module.nix
+        ./website/flake-module.nix
         ./dev/formatter.nix
         ./dev/shell.nix
       ];
