@@ -1,10 +1,38 @@
-:root {
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
   --bg: #0d1117;
   --fg: #c9d1d9;
+  --fg-muted: #8b949e;
   --accent: #58a6ff;
   --card-bg: #161b22;
   --border: #30363d;
   --code-bg: #0d1117;
+  --badge-bg: #30363d;
+  --badge-free: #238636;
+  --badge-unfree: #da3633;
+  --badge-broken: #9e6a03;
+  --error: #f85149;
+  --btn-bg: #21262d;
+  --btn-hover: #30363d;
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg: #ffffff;
+  --fg: #24292f;
+  --fg-muted: #57606a;
+  --accent: #0969da;
+  --card-bg: #f6f8fa;
+  --border: #d0d7de;
+  --code-bg: #f6f8fa;
+  --badge-bg: #e1e4e8;
+  --badge-free: #1a7f37;
+  --badge-unfree: #cf222e;
+  --badge-broken: #9a6700;
+  --error: #cf222e;
+  --btn-bg: #f3f4f6;
+  --btn-hover: #e5e7eb;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,11 +45,45 @@ body {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-header { text-align: center; margin-bottom: 2rem; }
-header h1 { color: var(--accent); font-size: 2.5rem; }
-header p { color: #8b949e; }
+header { margin-bottom: 2rem; }
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  text-align: center;
+  flex: 1;
+}
+
+.header-title h1 { color: var(--accent); font-size: 2.5rem; }
+.header-title p { color: var(--fg-muted); }
+
+/* Theme toggle button */
+.theme-toggle {
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--fg);
+  transition: background-color 0.2s;
+}
+
+.theme-toggle:hover {
+  background: var(--btn-hover);
+}
+
+[data-theme="dark"] .theme-icon-light { display: none; }
+[data-theme="dark"] .theme-icon-dark { display: inline; }
+[data-theme="light"] .theme-icon-dark { display: none; }
+[data-theme="light"] .theme-icon-light { display: inline; }
 
 .search-container {
   display: flex;
@@ -35,6 +97,10 @@ header p { color: #8b949e; }
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.branch-selector label {
+  color: var(--fg-muted);
 }
 
 #branch {
@@ -59,7 +125,7 @@ header p { color: #8b949e; }
 
 #search:focus { outline: none; border-color: var(--accent); }
 
-#count { color: #8b949e; white-space: nowrap; }
+#count { color: var(--fg-muted); white-space: nowrap; }
 
 #results { display: grid; gap: 1rem; }
 
@@ -69,7 +135,7 @@ header p { color: #8b949e; }
   border-radius: 6px;
   padding: 1rem;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.3s;
 }
 
 .package:hover {
@@ -88,9 +154,9 @@ header p { color: #8b949e; }
 }
 
 .package-name { color: var(--accent); font-weight: 600; font-size: 1.1rem; }
-.package-version { color: #8b949e; font-size: 0.9rem; }
+.package-version { color: var(--fg-muted); font-size: 0.9rem; }
 .package-description { color: var(--fg); }
-.package-meta { margin-top: 0.5rem; font-size: 0.85rem; color: #8b949e; }
+.package-meta { margin-top: 0.5rem; font-size: 0.85rem; color: var(--fg-muted); }
 .package-meta a { color: var(--accent); text-decoration: none; }
 .package-meta a:hover { text-decoration: underline; }
 
@@ -160,7 +226,7 @@ header p { color: #8b949e; }
 }
 
 .info-table td:first-child {
-  color: #8b949e;
+  color: var(--fg-muted);
   width: 120px;
 }
 
@@ -190,23 +256,23 @@ header p { color: #8b949e; }
   padding: 0.15rem 0.4rem;
   font-size: 0.75rem;
   border-radius: 3px;
-  background: var(--border);
+  background: var(--badge-bg);
   color: var(--fg);
   margin-left: 0.25rem;
 }
 
 .badge.free {
-  background: #238636;
+  background: var(--badge-free);
   color: #fff;
 }
 
 .badge.unfree {
-  background: #da3633;
+  background: var(--badge-unfree);
   color: #fff;
 }
 
 .badge.broken {
-  background: #9e6a03;
+  background: var(--badge-broken);
   color: #fff;
 }
 
@@ -215,14 +281,14 @@ header p { color: #8b949e; }
 }
 
 .license-badge.unfree {
-  color: #f85149;
+  color: var(--error);
 }
 
 /* Long description */
 .long-description {
   white-space: pre-wrap;
   font-size: 0.9rem;
-  color: #8b949e;
+  color: var(--fg-muted);
   background: var(--card-bg);
   padding: 0.75rem;
   border-radius: 4px;
@@ -234,6 +300,11 @@ header p { color: #8b949e; }
 footer {
   margin-top: 3rem;
   text-align: center;
-  color: #8b949e;
+  color: var(--fg-muted);
 }
 footer a { color: var(--accent); text-decoration: none; }
+
+/* Error message */
+.error-message {
+  color: var(--error);
+}

@@ -1,16 +1,51 @@
-const BRANCHES = ['unstable', 'release-25.11'];
 let fuse = null;
 let allPackages = [];
 let expandedPackage = null;
+
+// Initialize branch selector from config
+function initBranchSelector() {
+  const branchEl = document.getElementById('branch');
+  branchEl.innerHTML = CONFIG.branches
+    .map(b => `<option value="${b}">${b}</option>`)
+    .join('');
+}
+
+// Initialize GitHub link from config
+function initGitHubLink() {
+  const linkEl = document.getElementById('github-link');
+  if (linkEl) {
+    linkEl.href = `https://github.com/${CONFIG.githubRepo}`;
+  }
+}
+
+// Theme management
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  setTheme(theme);
+
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+}
 
 async function loadPackages(branch) {
   try {
     const response = await fetch(`data/${branch}/packages.json`);
     if (!response.ok) {
-      if (branch !== 'unstable') {
-        console.warn(`Branch ${branch} not found, falling back to unstable`);
-        document.getElementById('branch').value = 'unstable';
-        return loadPackages('unstable');
+      // Try fallback branches
+      const fallbackBranch = CONFIG.branches.find(b => b !== branch);
+      if (fallbackBranch) {
+        console.warn(`Branch ${branch} not found, falling back to ${fallbackBranch}`);
+        document.getElementById('branch').value = fallbackBranch;
+        return loadPackages(fallbackBranch);
       }
       throw new Error(`HTTP ${response.status}`);
     }
@@ -37,7 +72,7 @@ async function loadPackages(branch) {
     updateURL();
   } catch (error) {
     document.getElementById('results').innerHTML =
-      `<p style="color: #f85149;">Error loading packages: ${error.message}</p>`;
+      `<p class="error-message">Error loading packages: ${error.message}</p>`;
     document.getElementById('count').textContent = '';
   }
 }
@@ -87,16 +122,19 @@ function renderDetails(pkg) {
   const branch = document.getElementById('branch').value;
   const meta = pkg.meta || {};
 
+  const shellCmd = CONFIG.nixShellCmd(branch, pkg.name);
+  const runCmd = CONFIG.nixRunCmd(branch, pkg.name);
+
   return `
     <div class="package-details">
       <h4>Installation</h4>
       <div class="code-block">
-        <code>nix shell github:mulatta/toolz/${branch}#${pkg.name}</code>
-        <button class="copy-btn" onclick="copyToClipboard('nix shell github:mulatta/toolz/${branch}#${pkg.name}', event)">Copy</button>
+        <code>${escapeHtml(shellCmd)}</code>
+        <button class="copy-btn" onclick="copyToClipboard('${escapeHtml(shellCmd)}', event)">Copy</button>
       </div>
       <div class="code-block">
-        <code>nix run github:mulatta/toolz/${branch}#${pkg.name}</code>
-        <button class="copy-btn" onclick="copyToClipboard('nix run github:mulatta/toolz/${branch}#${pkg.name}', event)">Copy</button>
+        <code>${escapeHtml(runCmd)}</code>
+        <button class="copy-btn" onclick="copyToClipboard('${escapeHtml(runCmd)}', event)">Copy</button>
       </div>
 
       ${meta.longDescription ? `
@@ -229,7 +267,7 @@ function updateURL() {
   const branch = document.getElementById('branch').value;
   const query = document.getElementById('search').value;
   const params = new URLSearchParams();
-  if (branch !== 'unstable') params.set('branch', branch);
+  if (branch !== CONFIG.defaultBranch) params.set('branch', branch);
   if (query) params.set('q', query);
   const url = params.toString() ? `?${params}` : location.pathname;
   history.replaceState(null, '', url);
@@ -237,7 +275,7 @@ function updateURL() {
 
 function loadFromURL() {
   const params = new URLSearchParams(location.search);
-  const branch = params.get('branch') || 'unstable';
+  const branch = params.get('branch') || CONFIG.defaultBranch;
   const query = params.get('q') || '';
 
   document.getElementById('branch').value = branch;
@@ -247,6 +285,11 @@ function loadFromURL() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize from config
+  initBranchSelector();
+  initGitHubLink();
+  initTheme();
+
   const { branch, query } = loadFromURL();
 
   document.getElementById('branch').addEventListener('change', (e) => {

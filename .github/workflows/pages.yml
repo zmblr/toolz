@@ -4,7 +4,7 @@ on:
     branches: [main, unstable, release-*]
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *' # Daily at 6 AM UTC
+    - cron: "0 6 * * *" # Daily at 6 AM UTC
 permissions:
   contents: read
   pages: write
@@ -41,7 +41,7 @@ jobs:
 
             # Build website for this branch and extract packages.json
             nix build .#website --out-link "result-$branch" || continue
-            cp -L "result-$branch/data/unstable/packages.json" "deploy/data/$branch/packages.json" || echo "No packages.json for $branch"
+            cp -L "result-$branch/data/$branch/packages.json" "deploy/data/$branch/packages.json" || echo "No packages.json for $branch"
           done
 
           # Return to main for final checks
