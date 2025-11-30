@@ -2,19 +2,26 @@
 
 Bioinformatics packages for Nix
 
-## Packages
-
-**CLI Tools:**
-aptasuite, bbtools, blast, cutadapt, fastaptamer, flash, jellyfish, jellyfish-full, kmc, kmc-full, nextflow, viennarna-hpc, vsearch
-
-**Python Libraries:**
-cutadapt, dnaio, forgi, logging-exceptions, xopen, viennarna-hpc
+**[Package Search](https://zmblr.github.io/toolz/)** | [GitHub](https://github.com/zmblr/toolz)
 
 ## Usage
 
+```bash
+# Run directly
+nix run github:zmblr/toolz#blast
+
+# Enter shell with package
+nix shell github:zmblr/toolz#cutadapt
+
+# Use specific branch
+nix run github:zmblr/toolz/release-25.11#blast
+```
+
+### As Flake Input
+
 ```nix
 {
-  inputs.toolz.url = "github:yourname/toolz";
+  inputs.toolz.url = "github:zmblr/toolz";
 
   outputs = {nixpkgs, toolz, ...}: {
     # Use as overlay
@@ -26,10 +33,9 @@ cutadapt, dnaio, forgi, logging-exceptions, xopen, viennarna-hpc
 }
 ```
 
-```bash
-# Run directly
-nix run github:yourname/toolz#cutadapt
+## Branches
 
-# Python packages
-nix run github:yourname/toolz#python3Packages.dnaio
-```
+| Branch          | Description                                |
+| --------------- | ------------------------------------------ |
+| `release-25.11` | Stable, based on nixpkgs 25.05             |
+| `unstable`      | Latest packages, based on nixpkgs unstable |
