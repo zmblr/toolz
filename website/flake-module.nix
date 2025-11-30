@@ -32,16 +32,18 @@
     # Extract version from package
     # Priority: pkg.version > parse from pkg.name > "unknown"
     extractVersion = pkg:
-      pkg.version or (if pkg ? name
-      then let
-        fullName = pkg.name;
-        # Try to match version pattern at the end: -X.Y.Z or -X.Y or similar
-        parts = builtins.match "(.+)-([0-9]+[.0-9a-zA-Z-]*)" fullName;
-      in
-        if parts != null
-        then builtins.elemAt parts 1
+      pkg.version or (
+        if pkg ? name
+        then let
+          fullName = pkg.name;
+          # Try to match version pattern at the end: -X.Y.Z or -X.Y or similar
+          parts = builtins.match "(.+)-([0-9]+[.0-9a-zA-Z-]*)" fullName;
+        in
+          if parts != null
+          then builtins.elemAt parts 1
+          else "unknown"
         else "unknown"
-      else "unknown");
+      );
 
     # Extract package metadata for the index
     extractPackageMeta = packages:
@@ -74,24 +76,31 @@
       pkgs.writeText "packages.json"
       (builtins.toJSON (filterPackages (extractPackageMeta self'.packages)));
 
+    # Configured branches (should match config.js)
+    branches = ["release-25.11" "unstable"];
+
     # Website static files
     websiteStatic = pkgs.runCommand "toolz-website-static" {} ''
       mkdir -p $out/css $out/js
 
       cp ${self}/website/index.html $out/
       cp ${self}/website/css/styles.css $out/css/
+      cp ${self}/website/js/config.js $out/js/
       cp ${self}/website/js/search.js $out/js/
     '';
 
     # Complete website with package data
+    # For local development, all branches point to the same packages.json
     websiteFull = pkgs.runCommand "toolz-website" {} ''
-      mkdir -p $out/data/unstable
+      cp -r ${websiteStatic} $out
+      chmod -R u+w $out
 
-      # Copy static files
-      cp -r ${websiteStatic}/* $out/
-
-      # Generate package index
-      cp ${packagesJson} $out/data/unstable/packages.json
+      # Create data directory for each branch (same data for local dev)
+      ${lib.concatMapStringsSep "\n" (branch: ''
+          mkdir -p $out/data/${branch}
+          cp ${packagesJson} $out/data/${branch}/packages.json
+        '')
+        branches}
     '';
 
     # Development server script

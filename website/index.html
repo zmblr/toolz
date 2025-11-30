@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
@@ -10,18 +10,23 @@
 
 <body>
   <header>
-    <h1>toolz</h1>
-    <p>Bioinformatics Nix Packages</p>
+    <div class="header-content">
+      <div class="header-title">
+        <h1>toolz</h1>
+        <p>Bioinformatics Nix Packages</p>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-icon-dark">&#9790;</span>
+        <span class="theme-icon-light">&#9728;</span>
+      </button>
+    </div>
   </header>
 
   <main>
     <div class="search-container">
       <div class="branch-selector">
         <label for="branch">Branch:</label>
-        <select id="branch">
-          <option value="release-25.11">release-25.11</option>
-          <option value="unstable">unstable</option>
-        </select>
+        <select id="branch"></select>
       </div>
       <input type="text" id="search" placeholder="Search packages..." autofocus>
       <span id="count"></span>
@@ -31,10 +36,11 @@
   </main>
 
   <footer>
-    <a href="https://github.com/mulatta/toolz">GitHub</a>
+    <a id="github-link" href="https://github.com/zmblr/toolz">GitHub</a>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/search.js"></script>
 </body>
 
