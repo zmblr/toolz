@@ -2,3 +2,6 @@
 result/
 .jj/
 result*
+
+# Website generated data
+website/data/
