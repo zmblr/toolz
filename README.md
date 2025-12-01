@@ -2,19 +2,29 @@
 
 Bioinformatics packages for Nix
 
-## Packages
-
-**CLI Tools:**
-aptasuite, bbtools, blast, cutadapt, fastaptamer, flash, jellyfish, jellyfish-full, kmc, kmc-full, nextflow, viennarna-hpc, vsearch
-
-**Python Libraries:**
-cutadapt, dnaio, forgi, logging-exceptions, xopen, viennarna-hpc
+**[Package Search](https://zmblr.github.io/toolz/)**
 
 ## Usage
 
+```bash
+# Run directly
+nix run github:zmblr/toolz#blast
+
+# Enter shell with package
+nix shell github:zmblr/toolz#cutadapt
+
+# Use specific branch
+nix run github:zmblr/toolz/release-25.11#blast
+```
+
+### As Flake Input
+
 ```nix
 {
-  inputs.toolz.url = "github:yourname/toolz";
+  toolz.url = "github:mulatta/toolz";
+  toolz.inputs.nixpkgs.follows = "nixpkgs";
+  toolz.inputs.systems.follows = "systems";
+  toolz.inputs.treefmt-nix.follows = "treefmt-nix";
 
   outputs = {nixpkgs, toolz, ...}: {
     # Use as overlay
@@ -26,10 +36,31 @@ cutadapt, dnaio, forgi, logging-exceptions, xopen, viennarna-hpc
 }
 ```
 
-```bash
-# Run directly
-nix run github:yourname/toolz#cutadapt
+### With flake-parts
 
-# Python packages
-nix run github:yourname/toolz#python3Packages.dnaio
+```nix
+{
+  toolz.url = "github:mulatta/toolz";
+  toolz.inputs.flake-parts.follows = "flake-parts";
+  toolz.inputs.nixpkgs-unstable.follows = "nixpkgs-unstable";
+  toolz.inputs.nixpkgs.follows = "nixpkgs";
+  toolz.inputs.systems.follows = "systems";
+  toolz.inputs.treefmt-nix.follows = "treefmt-nix";
+
+  outputs = {nixpkgs, toolz, ...}: {
+    # Use as overlay
+    nixpkgs.overlays = [ toolz.overlays.default ];
+
+    # Or direct package reference
+    packages.default = toolz.packages.${system}.blast;
+  };
+}
 ```
+
+## Branches
+
+| Branch          | Description                                |
+| --------------- | ------------------------------------------ |
+| `release-25.05` | Stable, based on nixpkgs 25.05             |
+| `release-25.11` | Stable, based on nixpkgs 25.11             |
+| `unstable`      | Latest packages, based on nixpkgs unstable |
