@@ -45,10 +45,6 @@
       find $out/share/interproscan -type f -name "*.py" -exec chmod +x {} \;
       find $out/share/interproscan/bin -type f -exec chmod +x {} \;
 
-      # Fix setup.py to use absolute paths for HMM indexing
-      substituteInPlace $out/share/interproscan/setup.py \
-        --replace-warn "cmd = ['bin/" "cmd = ['$out/share/interproscan/bin/"
-
       # Remove LevelDB LOCK files (runtime artifacts that prevent database access)
       find $out/share/interproscan -name "LOCK" -type f -delete
 
