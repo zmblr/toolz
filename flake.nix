@@ -13,6 +13,7 @@
         ./templates/flake-module.nix
         ./dev/formatter.nix
         ./dev/shell.nix
+        ./website/flake-module.nix
       ];
 
       perSystem = {

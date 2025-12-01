@@ -22,6 +22,8 @@ nix run github:zmblr/toolz/release-25.11#blast
 ```nix
 {
   toolz.url = "github:mulatta/toolz";
+  toolz.inputs.flake-parts.follows = "flake-parts";
+  toolz.inputs.nixpkgs-unstable.follows = "nixpkgs-unstable";
   toolz.inputs.nixpkgs.follows = "nixpkgs";
   toolz.inputs.systems.follows = "systems";
   toolz.inputs.treefmt-nix.follows = "treefmt-nix";
