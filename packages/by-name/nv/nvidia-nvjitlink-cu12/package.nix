@@ -1,6 +1,6 @@
 {
   buildPythonPackage,
-  fetchPypi,
+  fetchurl,
   lib,
   autoPatchelfHook,
   stdenv,
@@ -10,13 +10,8 @@ buildPythonPackage rec {
   version = "12.6.77";
   format = "wheel";
 
-  src = fetchPypi {
-    pname = "nvidia_nvjitlink_cu12";
-    inherit version format;
-    dist = "py3";
-    python = "py3";
-    abi = "none";
-    platform = "manylinux2014_x86_64";
+  src = fetchurl {
+    url = "https://files.pythonhosted.org/packages/fe/e4/486de766851d58699bcfeb3ba6a3beb4d89c3809f75b9d423b9508a8760f/nvidia_nvjitlink_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl";
     hash = "sha256-muNG0WIDrk6lE75BZJUWegEB0z0tFJNaqcGCmj+0UUI=";
   };
 

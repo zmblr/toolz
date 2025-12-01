@@ -1,6 +1,6 @@
 {
   buildPythonPackage,
-  fetchPypi,
+  fetchurl,
   lib,
   autoPatchelfHook,
   stdenv,
@@ -10,13 +10,8 @@ buildPythonPackage rec {
   version = "12.6.77";
   format = "wheel";
 
-  src = fetchPypi {
-    pname = "nvidia_cuda_nvcc_cu12";
-    inherit version format;
-    dist = "py3";
-    python = "py3";
-    abi = "none";
-    platform = "manylinux2014_x86_64";
+  src = fetchurl {
+    url = "https://files.pythonhosted.org/packages/62/8f/cd3032281ba7bb531fe3159337af00c5c805fd6a31dc700f0715c8748c8c/nvidia_cuda_nvcc_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl";
     hash = "sha256-tmu13WuK5iJiWGaRl307SkJekdthtLm8L2tCvNQVS5Y=";
   };
 

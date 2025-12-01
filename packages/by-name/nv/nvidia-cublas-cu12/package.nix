@@ -1,6 +1,6 @@
 {
   buildPythonPackage,
-  fetchPypi,
+  fetchurl,
   lib,
   autoPatchelfHook,
   stdenv,
@@ -10,13 +10,8 @@ buildPythonPackage rec {
   version = "12.6.3.3";
   format = "wheel";
 
-  src = fetchPypi {
-    pname = "nvidia_cublas_cu12";
-    inherit version format;
-    dist = "py3";
-    python = "py3";
-    abi = "none";
-    platform = "manylinux2014_x86_64";
+  src = fetchurl {
+    url = "https://files.pythonhosted.org/packages/f3/e7/c186a31c234fce776436753bfef4807df7f9b4cb3eeff358fcfcbf64b547/nvidia_cublas_cu12-12.6.3.3-py3-none-manylinux2014_x86_64.whl";
     hash = "sha256-8z+2jhAdmUcMgtF/kqDdn3TeKiFoXCF/RxbN1jsTFus=";
   };
 

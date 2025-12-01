@@ -20,9 +20,7 @@
 
     # Build regular packages by importing directly
     regularPackages = import (self + "/packages/lib/regular-packages.nix") {
-      inherit lib stdenv callPackage;
-      inherit pythonOverlayFunc python3PackagesExtended;
-      pkgs = final;
+      inherit lib stdenv callPackage python3PackagesExtended;
     };
 
     # Import external packages
@@ -48,8 +46,5 @@
       python311Packages = prev.python311Packages.overrideScope pythonOverlayFunc;
       python312Packages = prev.python312Packages.overrideScope pythonOverlayFunc;
       python313Packages = prev.python313Packages.overrideScope pythonOverlayFunc;
-    }
-    // lib.optionalAttrs stdenv.isLinux {
-      inherit (regularPackages) alphafold3;
     };
 }
