@@ -24,14 +24,20 @@ in
       owner = "steineggerlab";
       repo = "foldseek";
       rev = version;
-      hash = "sha256-CAwdpzsnHE9Rs1I97FGhP+lYtssGqZvxj288xV+/AYg=";
-      fetchSubmodules = true;
+      # fetchSubmodules = false to avoid empty-URL kompute submodule
+      # lib/mmseqs and lib/prostt5 are NOT submodules, they're included directly
+      hash = "sha256-tZ0oeYPlTXvr/NR7djEvdbuF2K2bMGKC+9FFgsZgY38=";
+      fetchSubmodules = false;
     };
 
     postPatch = ''
       # Fix shebang for xxdi.pl Perl scripts used in build
       patchShebangs lib/mmseqs/cmake/xxdi.pl
       patchShebangs cmake/xxdi.pl
+
+      # Remove obsolete CMake policy that's no longer supported
+      substituteInPlace CMakeLists.txt \
+        --replace-fail 'cmake_policy(SET CMP0060 OLD)' '# cmake_policy(SET CMP0060 OLD) # removed: no longer supported'
     '';
 
     nativeBuildInputs =
@@ -58,7 +64,11 @@ in
       ];
 
     cmakeFlags =
-      optionals stdenv.hostPlatform.isx86_64 [
+      [
+        # Workaround for CMake 3.31+ removing compatibility with cmake_minimum_required < 3.5
+        "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+      ]
+      ++ optionals stdenv.hostPlatform.isx86_64 [
         "-DHAVE_AVX2=1"
       ]
       ++ optionals stdenv.hostPlatform.isAarch64 [
