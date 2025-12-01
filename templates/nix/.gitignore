@@ -1,0 +1,7 @@
+# cache
+.direnv/*
+.jj/*
+
+# build result
+target/
+result
