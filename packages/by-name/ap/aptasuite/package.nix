@@ -3,7 +3,7 @@
   fetchFromGitHub,
   makeWrapper,
   maven,
-  jdk11,
+  jdk25_headless,
   # Runtime dependencies for JavaFX
   gtk3,
   glib,
@@ -15,7 +15,7 @@
   freetype,
   fontconfig,
 }: let
-  jdk = jdk11;
+  jdk = jdk25_headless;
   runtimeLibs = lib.makeLibraryPath [
     gtk3
     glib
