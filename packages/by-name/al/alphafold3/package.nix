@@ -21,7 +21,7 @@
     "nvjitlink"
   ];
 
-  python3WithOverlay = pkgs.python3.override {
+  python3WithOverlay = python3Packages.python.override {
     packageOverrides = pythonOverlayFunc;
   };
   python-with-alphafold3 = python3WithOverlay.withPackages (ps: [ps.alphafold3]);

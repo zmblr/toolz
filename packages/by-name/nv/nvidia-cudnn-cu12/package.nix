@@ -1,6 +1,6 @@
 {
   buildPythonPackage,
-  fetchPypi,
+  fetchurl,
   lib,
   autoPatchelfHook,
   stdenv,
@@ -12,13 +12,8 @@ buildPythonPackage rec {
   version = "9.5.1.17";
   format = "wheel";
 
-  src = fetchPypi {
-    pname = "nvidia_cudnn_cu12";
-    inherit version format;
-    dist = "py3";
-    python = "py3";
-    abi = "none";
-    platform = "manylinux_2_28_x86_64";
+  src = fetchurl {
+    url = "https://files.pythonhosted.org/packages/2a/78/4535c9c7f859a64781e43c969a3a7e84c54634e319a996d43ef32ce46f83/nvidia_cudnn_cu12-9.5.1.17-py3-none-manylinux_2_28_x86_64.whl";
     hash = "sha256-MKw4afbbF9Fw4OVW3WzF7uAmR6vDHKhWY01aQPgsFbI=";
   };
 

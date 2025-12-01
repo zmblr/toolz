@@ -1,6 +1,6 @@
 {
   buildPythonPackage,
-  fetchPypi,
+  fetchurl,
   lib,
   autoPatchelfHook,
   stdenv,
@@ -11,13 +11,8 @@ buildPythonPackage rec {
   version = "0.4.34";
   format = "wheel";
 
-  src = fetchPypi {
-    pname = "jax_cuda12_pjrt";
-    inherit version format;
-    dist = "py3";
-    python = "py3";
-    abi = "none";
-    platform = "manylinux2014_x86_64";
+  src = fetchurl {
+    url = "https://files.pythonhosted.org/packages/2c/96/6c7162d57d13bf14cd2e70780c583bf5056e7cbc21a07ade6397ac80b3d4/jax_cuda12_pjrt-0.4.34-py3-none-manylinux2014_x86_64.whl";
     hash = "sha256-DHzJj5Ysx/yOCl6mMxtCoM7lFvIC8cMBn2qlzZUwzKA=";
   };
 

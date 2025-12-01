@@ -12,8 +12,11 @@
   # Apply overlay to get Python packages
   python3PackagesExtended = pkgs.python3Packages.overrideScope pythonOverlayFunc;
 
+  # Python 3.12 packages for packages that don't support Python 3.13 yet (e.g., alphafold3)
+  python312PackagesExtended = pkgs.python312Packages.overrideScope pythonOverlayFunc;
+
   regularPackages = callPackage ./regular-packages.nix {
-    inherit pythonOverlayFunc python3PackagesExtended;
+    inherit pythonOverlayFunc python3PackagesExtended python312PackagesExtended;
   };
 
   externalPackages = import ./external-packages.nix {inherit inputs system;};

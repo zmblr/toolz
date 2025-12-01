@@ -1,6 +1,6 @@
 {
   buildPythonPackage,
-  fetchPypi,
+  fetchurl,
   lib,
   autoPatchelfHook,
   stdenv,
@@ -11,14 +11,9 @@ buildPythonPackage rec {
   version = "12.5.4.2";
   format = "wheel";
 
-  src = fetchPypi {
-    pname = "nvidia_cusparse_cu12";
-    inherit version format;
-    dist = "py3";
-    python = "py3";
-    abi = "none";
-    platform = "manylinux2014_x86_64";
-    hash = "sha256-I3SaZXEZGiFct00c2/9KhuexnxIAwHGz/PhEpb6iOi8=";
+  src = fetchurl {
+    url = "https://files.pythonhosted.org/packages/06/1e/b8b7c2f4099a37b96af5c9bb158632ea9e5d9d27d7391d7eb8fc45236674/nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl";
+    hash = "sha256-dVbZ7KFW4YGEuUlHreD7pbtH1pzsRr+GYP0scaS0i3M=";
   };
 
   nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [autoPatchelfHook];

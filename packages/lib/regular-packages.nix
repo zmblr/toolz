@@ -5,6 +5,7 @@
   pkgs,
   pythonOverlayFunc,
   python3PackagesExtended,
+  python312PackagesExtended,
 }: let
   byNamePackage = import ./by-name.nix;
 in
@@ -39,9 +40,10 @@ in
     viennarna-hpc = callPackage (byNamePackage "viennarna-hpc") {};
   }
   // lib.optionalAttrs (stdenv.isLinux && stdenv.isx86_64) {
+    # alphafold3 requires Python 3.12 (jaxlib 0.4.34 wheels not available for 3.13)
     alphafold3 = callPackage (byNamePackage "alphafold3") {
       inherit pkgs pythonOverlayFunc;
-      python3Packages = python3PackagesExtended;
+      python3Packages = python312PackagesExtended;
     };
     interproscan = callPackage (byNamePackage "interproscan") {};
   }

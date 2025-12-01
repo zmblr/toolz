@@ -3,7 +3,6 @@
   buildPythonPackage,
   fetchFromGitHub,
   fetchurl,
-  fetchPypi,
   # Build
   cmake,
   ninja,
@@ -83,39 +82,21 @@
   };
 
   # Local jaxlib 0.4.34 (prebuilt wheel)
-  # NOTE: dist parameter must be set to PyPI's hash-based path for platform-specific wheels
+  # NOTE: Using fetchurl with direct PyPI URLs (fetchPypi generates incorrect URLs in nixpkgs 25.11)
   jaxlib-local = let
     inherit (python) pythonVersion;
 
     srcs = {
-      "3.10-x86_64-linux" = fetchPypi {
-        pname = "jaxlib";
-        version = "0.4.34";
-        format = "wheel";
-        dist = "e4/b0/a5bd34643c070e50829beec217189eab1acdfea334df1f9ddb4e5f8bec0f";
-        python = "cp310";
-        abi = "cp310";
-        platform = "manylinux2014_x86_64";
+      "3.10-x86_64-linux" = fetchurl {
+        url = "https://files.pythonhosted.org/packages/e4/b0/a5bd34643c070e50829beec217189eab1acdfea334df1f9ddb4e5f8bec0f/jaxlib-0.4.34-cp310-cp310-manylinux2014_x86_64.whl";
         hash = "sha256-2A5mSIVUbm1RbnJh/j0VnQpHq/V/vugpnzc2chg9wtI=";
       };
-      "3.11-x86_64-linux" = fetchPypi {
-        pname = "jaxlib";
-        version = "0.4.34";
-        format = "wheel";
-        dist = "c7/d0/6bc81c0b1d507f403e6085ce76a429e6d7f94749d742199252e299dd1424";
-        python = "cp311";
-        abi = "cp311";
-        platform = "manylinux2014_x86_64";
+      "3.11-x86_64-linux" = fetchurl {
+        url = "https://files.pythonhosted.org/packages/c7/d0/6bc81c0b1d507f403e6085ce76a429e6d7f94749d742199252e299dd1424/jaxlib-0.4.34-cp311-cp311-manylinux2014_x86_64.whl";
         hash = "sha256-O8/jpDpkqaMo+KPKoQzXe8jbEz9X8F3VL6w2Oyq1v18=";
       };
-      "3.12-x86_64-linux" = fetchPypi {
-        pname = "jaxlib";
-        version = "0.4.34";
-        format = "wheel";
-        dist = "e7/0d/4faf839e3c8ce2a5b615df64427be3e870899c72c0ebfb5859348150aba1";
-        python = "cp312";
-        abi = "cp312";
-        platform = "manylinux2014_x86_64";
+      "3.12-x86_64-linux" = fetchurl {
+        url = "https://files.pythonhosted.org/packages/e7/0d/4faf839e3c8ce2a5b615df64427be3e870899c72c0ebfb5859348150aba1/jaxlib-0.4.34-cp312-cp312-manylinux2014_x86_64.whl";
         hash = "sha256-SCcukDT/ho1DKM8AVaB4gv0r6T9Z37YoOvfeSR+dEpA=";
       };
     };
@@ -173,11 +154,14 @@
     doCheck = false;
   };
 
-  # Override chex to use local JAX
-  chex-local = chex.override {
-    jax = jax-local;
-    jaxlib = jaxlib-local;
-  };
+  # Override chex to use local JAX (disable runtime deps check for jax 0.4.34 compatibility)
+  chex-local =
+    (chex.override {
+      jax = jax-local;
+      jaxlib = jaxlib-local;
+    }).overrideAttrs (_: {
+      dontCheckRuntimeDeps = true;
+    });
 
   # Override jmp to use local JAX
   jmp-local = jmp.override {
