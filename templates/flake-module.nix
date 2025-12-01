@@ -1,29 +1,35 @@
 {
-  flake.templates = {
+  flake.templates = let
+    welcomeText = ''
+      IMPORTANT: Run init-template before direnv or nix develop:
+
+        nix run github:zmblr/toolz#init-template -- <project-name> .
+
+      Then start developing:
+
+        direnv allow
+        # or: nix develop .#impure
+    '';
+  in {
     rust = {
       path = ./rust;
       description = "Basic toolz rust project template";
+      inherit welcomeText;
     };
     pixi = {
       path = ./pixi;
       description = "Basic toolz pixi project template";
+      inherit welcomeText;
+    };
+    uv = {
+      path = ./uv;
+      description = "Basic toolz uv project template";
+      inherit welcomeText;
     };
     uv2nix = {
       path = ./uv2nix;
-      description = "Python project template using uv2nix and flake-parts";
-      welcomeText = ''
-
-        uv2nix template created!
-
-        IMPORTANT: Run init-template before direnv or nix develop:
-
-          nix run github:zmblr/toolz#init-template -- <project-name> .
-
-        Then start developing:
-
-          direnv allow
-          # or: nix develop .#impure
-      '';
+      description = "Basic toolz uv2nix project template";
+      inherit welcomeText;
     };
   };
 
