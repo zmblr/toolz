@@ -31,6 +31,11 @@
       description = "Basic toolz uv2nix project template";
       inherit welcomeText;
     };
+    default = {
+      path = ./nix;
+      description = "Basic toolz nix project template";
+      inherit welcomeText;
+    };
   };
 
   perSystem = {pkgs, ...}: {
