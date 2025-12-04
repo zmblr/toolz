@@ -63,6 +63,6 @@ nix run github:zmblr/toolz/release-25.11#blast
 
 | Branch          | Description                                |
 | --------------- | ------------------------------------------ |
-| `release-25.05` | Stable, based on nixpkgs 25.05             |
+| `release-25.05` | Deprecated, based on nixpkgs 25.05         |
 | `release-25.11` | Stable, based on nixpkgs 25.11             |
 | `unstable`      | Latest packages, based on nixpkgs unstable |
